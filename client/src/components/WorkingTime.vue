@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button @click="createWorkingTime({ startTime: '09:00', endTime: '17:00' })">Create Working Time</button>
+      <button @click="createWorkingTime({ working_time: { start: '2023-10-08T09:00:00Z', end: '2023-10-08T17:00:00Z' } })">Create Working Time</button>
     </div>
   </template>
   
@@ -22,7 +22,9 @@
     methods: {
       async createWorkingTime(data) {
         try {
-          const response = await axios.post(`/workingTime/${userId}`, data);
+          console.log("start request : ", data)
+          const response = await axios.post(`http://localhost:4000/api/workingtime/1`, data);
+          console.log(response)
           console.log('Working time created:', response.data);
         } catch (error) {
           console.error('Error creating working time:', error);

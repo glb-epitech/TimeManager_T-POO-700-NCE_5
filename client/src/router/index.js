@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue'; // Assure-toi d'avoir ce composant
 import ClockManager from '@/views/ClockManager.vue'; // Ton composant ClockManager
+import WorkingTime from '@/components/WorkingTime.vue';
 
 const routes = [
   {
@@ -12,6 +13,11 @@ const routes = [
     path: '/clock',
     name: 'ClockManager',
     component: ClockManager
+  },
+  {
+    path: '/workingtime',
+    name: 'WorkingTime',
+    component: WorkingTime
   },
   // Ajoute d'autres routes ici
 ];

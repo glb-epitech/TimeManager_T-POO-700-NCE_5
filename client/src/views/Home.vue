@@ -9,6 +9,9 @@
       <router-link to="/user" class="mt-4 bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
         Gérer les utilisateurs
       </router-link>
+      <router-link to="/workingtime" class="mt-4 bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-600">
+        Ajouter, Modifier des WorkingTime
+      </router-link>
     </div>
   </template>
   
