@@ -2,9 +2,6 @@ defmodule TimeManager.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: false}
-
-
   schema "users" do
     field :username, :string
     field :email, :string
