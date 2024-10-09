@@ -1,27 +1,25 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div id="app" class="flex flex-col min-h-screen">
+    <header class="flex justify-between items-center w-full p-4 bg-gray-800 text-white">
+      <img src="./assets/logo.png" alt="Logo" class="logo h-12" />
+      <nav>
+        <router-link to="/" class="p-2 hover:bg-gray-700 rounded">Home</router-link>
+        <router-link to="/clock" class="p-2 hover:bg-gray-700 rounded">Clock Manager</router-link>
+      </nav>
+    </header>
+    <main class="flex-grow">
+      <router-view></router-view> <!-- Affiche le composant correspondant à la route -->
+    </main>
+    <footer class="bg-gray-800 text-white text-center p-4">
+      <p>&copy; 2024 Time Manager. Tous droits réservés.</p>
+    </footer>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
+<script setup>
+</script>
 
+<style scoped>
 .logo {
   display: block;
   margin: 0 auto 2rem;
@@ -31,11 +29,6 @@ header {
   header {
     display: flex;
     place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
   }
 
   header .wrapper {
