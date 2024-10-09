@@ -16,15 +16,13 @@ defmodule TimeManagerWeb.Router do
     put "/users/:id", UserController, :update       # URL: /api/users/:id (Mettre à jour un utilisateur spécifique)
     delete "/users/:id", UserController, :delete    # URL: /api/users/:id (Supprimer un utilisateur spécifique)
 
-    # Working Times routes
+    # Working Time routes
     get "/workingtimes", WorkingTimeController, :index
     get "/workingtimes/:user_id", WorkingTimeController, :index      # URL: /api/workingtime/:user_id (Lister les heures de travail d'un utilisateur)
-
-    # Working Time routes
-    get "/workingtime/:userid/:workingtimeid", WorkingTimeController, :show   # URL: /api/workingtime/:user_id/:id (Afficher une heure de travail spécifique)
+    get "/workingtime/:user_id/:id", WorkingTimeController, :show   # URL: /api/workingtime/:user_id/:id (Afficher une heure de travail spécifique)
     post "/workingtime/:user_id", WorkingTimeController, :create    # URL: /api/workingtime/:user_id (Créer une heure de travail pour un utilisateur)
-    put "/workingtime/:userid/:workingtimeid", WorkingTimeController, :update          # URL: /api/workingtime/:id (Mettre à jour une heure de travail spécifique)
-    delete "/workingtime/:userid/:workingtimeid", WorkingTimeController, :delete       # URL: /api/workingtime/:id (Supprimer une heure de travail spécifique)
+    put "/workingtime/:id", WorkingTimeController, :update          # URL: /api/workingtime/:id (Mettre à jour une heure de travail spécifique)
+    delete "/workingtime/:id", WorkingTimeController, :delete       # URL: /api/workingtime/:id (Supprimer une heure de travail spécifique)
 
     # Clocking routes
     get "/clocks", ClockController, :index              # GET all clocks

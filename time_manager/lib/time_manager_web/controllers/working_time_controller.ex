@@ -4,7 +4,7 @@ defmodule TimeManagerWeb.WorkingTimeController do
   alias TimeManager.TimeTracking.WorkingTime
 
   action_fallback TimeManagerWeb.FallbackController
-  
+
   # GET /api/workingtimes
   def index(conn, _params) do
     working_times = TimeTracking.list_workingtimes()
@@ -42,7 +42,7 @@ defmodule TimeManagerWeb.WorkingTimeController do
     end
   end
 
-  # PUT /api/workingtimes/:id
+  # PUT /api/workingtimes/:id/
   def update(conn, %{"id" => id, "working_time" => working_time_params}) do
     working_time = TimeTracking.get_working_time!(id)
 
