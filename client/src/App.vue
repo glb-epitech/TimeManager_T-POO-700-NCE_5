@@ -1,13 +1,3 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import WorkingTimes from './components/WorkingTimes.vue'
-import WorkingTimes from './components/WorkingTimes.vue'
-</script>
-
-
-
-
 
 <template>
   <div id="app" class="flex flex-col min-h-screen">
