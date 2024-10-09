@@ -18,8 +18,9 @@ defmodule TimeManagerWeb.Router do
 
     # Working Time routes
     get "/workingtimes", WorkingTimeController, :index
-    get "/workingtimes/:user_id", WorkingTimeController, :index      # URL: /api/workingtime/:user_id (Lister les heures de travail d'un utilisateur)
-    get "/workingtime/:user_id/:id", WorkingTimeController, :show   # URL: /api/workingtime/:user_id/:id (Afficher une heure de travail spécifique)
+    get "/workingtimes/:user_id", WorkingTimeController, :show_user      # URL: /api/workingtime/:user_id (Lister les heures de travail d'un utilisateur)
+
+    get "/workingtime/:id", WorkingTimeController, :show   # URL: /api/workingtime/:user_id/:id (Afficher une heure de travail spécifique)
     post "/workingtime/:user_id", WorkingTimeController, :create    # URL: /api/workingtime/:user_id (Créer une heure de travail pour un utilisateur)
     put "/workingtime/:id", WorkingTimeController, :update          # URL: /api/workingtime/:id (Mettre à jour une heure de travail spécifique)
     delete "/workingtime/:id", WorkingTimeController, :delete       # URL: /api/workingtime/:id (Supprimer une heure de travail spécifique)

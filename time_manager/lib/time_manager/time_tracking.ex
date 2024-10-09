@@ -55,7 +55,7 @@ defmodule TimeManager.TimeTracking do
 
     Repo.all(query)
   end
-  
+
   @doc """
   Creates a clock.
 
@@ -151,6 +151,19 @@ defmodule TimeManager.TimeTracking do
 
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
+
+
+  # Function to list all working time entries for a specific user
+  def list_wt_for_user(user_id, start_date, end_date) do
+    query =
+      from c in WorkingTime,
+        where: c.user_id == ^user_id,
+        where: c.start >= ^start_date,
+        where: c.end <= ^end_date,
+        order_by: [desc: c.start]
+
+    Repo.all(query)
+  end
 
   @doc """
   Creates a working_time.
