@@ -2,7 +2,10 @@
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import WorkingTimes from './components/WorkingTimes.vue'
+import WorkingTimes from './components/WorkingTimes.vue'
 </script>
+
+
 
 
 
