@@ -17,7 +17,6 @@
       <p class="font-bold">Alert</p>
       <p>{{ errorMessage }}</p>
     </div>
-
     <div
       v-else-if="workingTimes.length > 0"
       class="bg-bat-black p-6 rounded-lg shadow-inner"
