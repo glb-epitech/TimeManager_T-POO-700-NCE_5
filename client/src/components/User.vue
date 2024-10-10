@@ -134,6 +134,9 @@ export default {
   methods: {
     async createUser() {
       try {
+        // Clear the list of users
+        this.users = []
+
         const response = await axios.post(`http://localhost:4000/api/users`, {
           user: {
             username: this.userName,
@@ -142,7 +145,6 @@ export default {
         });
         this.userData = response.data;
         alert("User created successfully");
-        this.getAllUsers();
       } catch (error) {
         this.handleError(error, "creating user");
       }
@@ -193,6 +195,9 @@ export default {
     },
     async getAllUsers() {
       try {
+        // Clear the individual user
+        this.userData = null;
+
         const response = await axios.get(`http://localhost:4000/api/users`);
         this.users = response.data;
         console.log(this.users);
