@@ -35,14 +35,8 @@
               v-model="startTime" 
               type="datetime-local" 
               class="mr-2 p-2 border rounded"
-              v-model="startTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
             />
             <input 
-              v-model="endTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
               v-model="endTime" 
               type="datetime-local" 
               class="mr-2 p-2 border rounded"
@@ -57,14 +51,8 @@
               v-model="startTime" 
               type="datetime-local" 
               class="mr-2 p-2 border rounded"
-              v-model="startTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
             />
             <input 
-              v-model="endTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
               v-model="endTime" 
               type="datetime-local" 
               class="mr-2 p-2 border rounded"
@@ -75,12 +63,14 @@
             >Update</button>
         </div>
  
-        <button 
-            @click="deleteWorkingTime()"
-            class="font-bold py-2 px-4 rounded mb-4 w-full"
-          >Delete
-        </button>
-  
+        <div class="flex items-center mb-4">       
+          <button 
+              @click="deleteWorkingTime()"
+              class="font-bold py-2 px-4 rounded mb-4 w-full"
+            >Delete
+          </button>
+        </div>
+          
       </div>
     </div>
     <div>
