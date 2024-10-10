@@ -84,6 +84,12 @@ export default {
       workingTimes: [],
       loading: true,
       errorMessage: null,
+      workingTime: null, // Initialiser workingTime
+      editMode: false, // Variable pour le mode d'édition
+      editForm: {
+        start: '',
+        end: ''
+      }
     };
   },
   methods: {
@@ -97,10 +103,12 @@ export default {
         );
         console.log('RESPONSE', response);
         
-        if (response.data && response.data.data) {
+        // Assurez-vous que vous utilisez la bonne structure de réponse
+        if (response.data && response.data.data && response.data.data.length > 0) {
           this.workingTimes = response.data.data;
+          this.workingTime = this.workingTimes[0]; // Assigner le premier élément à workingTime
         } else {
-          this.errorMessage = "Invalid response structure.";
+          this.errorMessage = "No patrol logs found for this user.";
         }
       } catch (error) {
         this.errorMessage = error.response?.data?.message || "Erreur lors de la récupération des heures de travail.";
@@ -116,10 +124,9 @@ export default {
     },
   },
   mounted() {
-    this.userId = this.$route.params.userId; // Récupération de userId depuis les paramètres de route
+    this.userId = this.$route.query.id;
     console.log('User ID from URL:', this.userId); 
     this.getWorkingTimes();
   },
 };
 </script>
-

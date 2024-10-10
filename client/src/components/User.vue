@@ -242,5 +242,12 @@ export default {
       }
     },
   },
+
+
+//   mounted() {
+//   const userIdFromUrl = this.$route.query.id;
+//   console.log('userIdFromUrl',userIdFromUrl)
+// },
+
 };
 </script>
