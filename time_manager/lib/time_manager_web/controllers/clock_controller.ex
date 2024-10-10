@@ -15,7 +15,6 @@ defmodule TimeManagerWeb.ClockController do
   def list_user_clocks(conn, %{"user_id" => user_id}) do
     clocks = TimeTracking.list_clocks_for_user(user_id)
     render(conn, TimeManagerWeb.ClockJSON, "index.json", clocks: clocks)
-    end
   end
 
   # POST /api/clocks/:user_id
