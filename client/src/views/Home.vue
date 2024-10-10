@@ -18,7 +18,7 @@
       <!-- Working Times Card -->
       <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
         <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Working Times</h2>
-        <WorkingTimes :userId="1" />
+        <WorkingTimes />
       </div>
     </div>
   </div>
