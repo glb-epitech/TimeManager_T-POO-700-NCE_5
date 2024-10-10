@@ -11,6 +11,12 @@ defmodule TimeManagerWeb.WorkingTimeController do
     render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
   end
 
+  # GET /api/workingtimes/:user_id
+  def index(conn, %{"user_id" => user_id}) do
+    working_times = TimeTracking.list_workingtimes_for_user(user_id)
+    render(conn, "index.json", working_times: working_times)
+  end
+
   # GET /api/workingtimes/:user_id?start=START_DATE&end=END_DATE
   def index(conn, %{"user_id" => user_id, "start" => start_date, "end" => end_date}) do
     working_times = TimeTracking.list_working_times(user_id, start_date, end_date)
