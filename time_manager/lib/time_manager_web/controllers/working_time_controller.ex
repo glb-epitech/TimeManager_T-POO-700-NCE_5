@@ -5,11 +5,14 @@ defmodule TimeManagerWeb.WorkingTimeController do
 
   action_fallback TimeManagerWeb.FallbackController
 
+
   # GET /api/workingtimes
   def index(conn, _params) do
     working_times = TimeTracking.list_workingtimes()
     render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
   end
+
+
 
   # GET /api/workingtimes/:user_id?start=START_DATE&end=END_DATE
   def show_user(conn, %{"user_id" => user_id, "start" => start_date, "end" => end_date}) do

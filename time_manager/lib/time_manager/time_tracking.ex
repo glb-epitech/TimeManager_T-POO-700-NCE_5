@@ -50,8 +50,8 @@ defmodule TimeManager.TimeTracking do
   def list_clocks_for_user(user_id) do
     query =
       from c in Clock,
-        where: c.user_id == ^user_id,
-        order_by: [desc: c.time]
+      where: c.user_id == ^user_id,
+      order_by: [desc: c.time]
 
     Repo.all(query)
   end
@@ -137,6 +137,23 @@ defmodule TimeManager.TimeTracking do
   end
 
   @doc """
+  Returns the list of all working times for a specific user
+
+  ## Examples
+
+      iex> list_workingtimes_for_user(1)
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_for_user(user_id) do
+    query =
+      from w in WorkingTime,
+        where: w.user_id == ^user_id,  # Ensure the user_id is properly referenced
+        order_by: [asc: w.start]
+    Repo.all(query)
+  end
+
+  @doc """
   Gets a single working_time.
 
   Raises `Ecto.NoResultsError` if the Working time does not exist.
@@ -201,6 +218,22 @@ defmodule TimeManager.TimeTracking do
     |> Repo.update()
   end
 
+
+
+
+  def list_working_times(user_id) do
+   query =
+    from w in WorkingTime,
+    where: w.user_id == ^user_id,
+    order_by: [desc: w.start]
+    Repo.all(query)
+  end
+
+
+
+
+
+
   @doc """
   Deletes a working_time.
 
@@ -229,4 +262,15 @@ defmodule TimeManager.TimeTracking do
   def change_working_time(%WorkingTime{} = working_time, attrs \\ %{}) do
     WorkingTime.changeset(working_time, attrs)
   end
+
+
+
+
+
+
+
+
+
+
+
 end

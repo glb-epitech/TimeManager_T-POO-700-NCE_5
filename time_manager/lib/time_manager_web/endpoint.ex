@@ -15,13 +15,13 @@ defmodule TimeManagerWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
+  plug CORSPlug # add this to link server to front
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
-
-  plug CORSPlug, origin: "*"
-
+  plug CORSPlug
   plug Plug.Static,
     at: "/",
     from: :time_manager,
