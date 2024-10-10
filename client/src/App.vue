@@ -9,7 +9,6 @@
     <main class="flex-grow">
       <router-view></router-view> <!-- Affiche le composant correspondant à la route -->
     </main>
-
     <footer class="bg-bat-black border-t border-bat-yellow text-bat-silver p-4">
     <div class="container mx-auto flex justify-between items-center">
       <p>&copy; 2024 Gotham City Time Management. All rights reserved.</p>
@@ -22,6 +21,11 @@
   </footer>
   </div>
 </template>
+
+
+<!-- <script setup>
+  import WorkingTimes from './views/WorkinTimes.vue'
+</script> -->
 
 <script setup>
 </script>

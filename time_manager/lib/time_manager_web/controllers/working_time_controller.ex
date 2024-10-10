@@ -20,6 +20,11 @@ defmodule TimeManagerWeb.WorkingTimeController do
     render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
   end
 
+  def show_user_working_time(conn, %{"user_id" => user_id}) do
+    working_times = TimeTracking.working_user_id_list(user_id)
+    render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
+  end
+
   # GET /api/workingtimes/:id
   def show(conn, %{"id" => id}) do
     working_time = TimeTracking.get_working_time!(id)

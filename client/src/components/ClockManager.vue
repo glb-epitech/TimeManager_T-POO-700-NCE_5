@@ -36,6 +36,7 @@
   </div>
 </template>
 
+
 <script>
 import api from '@/services/api';
 
@@ -45,7 +46,7 @@ export default {
       clockIn: false,
       startDateTime: null,
       loading: false,
-      userId: '1' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
+      userId: '2' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
     };
   },
   methods: {

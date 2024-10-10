@@ -33,7 +33,7 @@
       </div>
 
       <div class="mt-6 flex justify-end space-x-4">
-        <button @click="editWorkingTime" class="px-4 py-2 bg-bat-blue text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
+        <button @click="editMode = true" class="px-4 py-2 bg-bat-blue text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
           Edit Patrol Log
         </button>
         <button @click="deleteWorkingTime" class="px-4 py-2 bg-red-600 text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
@@ -45,6 +45,7 @@
     <div v-else class="text-center py-4 text-bat-silver">
       No patrol log found. The night is quiet.
     </div>
+
 
     <!-- Edit Form (could be in a modal or conditional rendering) -->
     <div v-if="editing" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
@@ -62,6 +63,8 @@
         </div>
         <div class="flex justify-end space-x-4">
           <button type="button" @click="cancelEdit" class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
+          <button type="button" @click="editMode = false" class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
+
             Cancel
           </button>
           <button type="submit" class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">

@@ -78,14 +78,9 @@ import axios from "axios";
 
 export default {
   name: "WorkingTimes",
-  props: {
-    userId: {
-      type: Number,
-      required: true,
-    },
-  },
   data() {
     return {
+      userId: null, 
       workingTimes: [],
       loading: true,
       errorMessage: null,
@@ -94,54 +89,37 @@ export default {
   methods: {
     async getWorkingTimes() {
       this.loading = true;
+      this.errorMessage = null; 
+      console.log(`Fetching working times for user ID: ${this.userId}`); 
       try {
         const response = await axios.get(
           `http://localhost:4000/api/workingtimes/${this.userId}`
         );
-        console.log(response);
-        this.workingTimes = response.data.data;
-        console.log(response.data.data);
+        console.log('RESPONSE', response);
+        
+        if (response.data && response.data.data) {
+          this.workingTimes = response.data.data;
+        } else {
+          this.errorMessage = "Invalid response structure.";
+        }
       } catch (error) {
-        this.errorMessage =
-          "Erreur lors de la récupération des heures de travail.";
-        console.error(
-          "Erreur lors de la récupération des heures de travail :",
-          error
-        );
+        this.errorMessage = error.response?.data?.message || "Erreur lors de la récupération des heures de travail.";
+        console.error("Erreur lors de la récupération des heures de travail :", error);
       } finally {
         this.loading = false;
       }
     },
+
     formatTime(time) {
       const date = new Date(time);
       return date.toLocaleString();
     },
   },
   mounted() {
+    this.userId = this.$route.params.userId; // Récupération de userId depuis les paramètres de route
+    console.log('User ID from URL:', this.userId); 
     this.getWorkingTimes();
-    console.log("TOTO");
   },
 };
 </script>
 
-<style scoped>
-.working-times {
-  margin: 20px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background-color: #f4f4f4;
-}
-</style>
