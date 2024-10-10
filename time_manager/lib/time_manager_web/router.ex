@@ -10,11 +10,12 @@ defmodule TimeManagerWeb.Router do
     pipe_through :api
 
     # User routes
-    get "/users", UserController, :index            # URL: /api/users (Liste des utilisateurs)
-    get "/users/:id", UserController, :show         # URL: /api/users/:id (Afficher un utilisateur spécifique)
-    post "/users", UserController, :create          # URL: /api/users (Créer un nouvel utilisateur)
-    put "/users/:id", UserController, :update       # URL: /api/users/:id (Mettre à jour un utilisateur spécifique)
-    delete "/users/:id", UserController, :delete    # URL: /api/users/:id (Supprimer un utilisateur spécifique)
+    get "/users/user", UserController, :show_user_by_email_and_username         # URL: /api/users/user (Afficher un utilisateur spécifique)
+    get "/users", UserController, :index                                        # URL: /api/users (Liste des utilisateurs)
+    get "/users/:id", UserController, :show                                     # URL: /api/users/:id (Afficher un utilisateur spécifique)
+    post "/users", UserController, :create                                      # URL: /api/users (Créer un nouvel utilisateur)
+    put "/users/:id", UserController, :update                                   # URL: /api/users/:id (Mettre à jour un utilisateur spécifique)
+    delete "/users/:id", UserController, :delete                                # URL: /api/users/:id (Supprimer un utilisateur spécifique)
 
     # Working Time routes
     get "/workingtimes", WorkingTimeController, :index
