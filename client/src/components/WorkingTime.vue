@@ -5,42 +5,43 @@
   
         <div class="flex items-center mb-4">
             <input 
-            v-model="startTime" 
-            type="datetime-local" 
-            class="mr-2 p-2 border rounded"
+              v-model="startTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
             />
             <input 
-            v-model="endTime" 
-            type="datetime-local" 
-            class="mr-2 p-2 border rounded"
+              v-model="endTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
             />
             <button 
-            @click="createWorkingTime({ working_time: { start: startTime, end: endTime } })"
-            class="font-bold py-2 px-4 rounded"
+              @click="createWorkingTime({ working_time: { start: startTime, end: endTime } })"
+              class="font-bold py-2 px-4 rounded"
             >Create Working Time</button>
         </div>
         <div class="flex items-center mb-4">
             <input 
-            v-model="startTime" 
-            type="datetime-local" 
-            class="mr-2 p-2 border rounded"
+              v-model="startTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
             />
             <input 
-            v-model="endTime" 
-            type="datetime-local" 
-            class="mr-2 p-2 border rounded"
+              v-model="endTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
             />
             <button 
-            @click="updateWorkingTime({ working_time: { start: startTime, end: endTime } })"
-            class="font-bold py-2 px-4 rounded"
+              @click="updateWorkingTime({ working_time: { start: startTime, end: endTime } })"
+              class="font-bold py-2 px-4 rounded"
             >Update Working Time</button>
+            <button 
+              @click="deleteWorkingTime()"
+              class="font-bold py-2 px-4 rounded mb-4 w-full"
+            >Delete Working Time
+            </button>
         </div>
  
-        <button 
-          @click="deleteWorkingTime()"
-          class="font-bold py-2 px-4 rounded mb-4 w-full"
-          >Delete Working Time
-        </button>
+
   
       </div>
     </div>
@@ -65,6 +66,13 @@
       }
     },
     methods: {
+      // async workingTimebyUser() {
+      //   try {
+      //     const response = await axios.get(`http://localhost:4000/api/`)
+      //   } catch (error) {
+      //     console.error('Error getting worktimes by user:', error);
+      //   }
+      // }
       async createWorkingTime(data) {
         try {
           console.log("start request : ", data)
