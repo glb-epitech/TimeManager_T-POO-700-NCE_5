@@ -182,6 +182,13 @@ defmodule TimeManager.TimeTracking do
     Repo.all(query)
   end
 
+  def working_user_id_list(user_id) do
+    query =
+      from c in WorkingTime,
+        where: c.user_id == ^user_id
+    Repo.all(query)
+  end
+
   @doc """
   Creates a working_time.
 
