@@ -131,8 +131,8 @@ export default {
       workingTimes: [],
       loading: true,
       errorMessage: null,
-      workingTime: null, 
-      editMode: false, 
+      workingTime: null,
+      editMode: false,
       editForm: {
         start: "",
         end: "",
@@ -156,7 +156,7 @@ export default {
           response.data.data.length > 0
         ) {
           this.workingTimes = response.data.data;
-          this.workingTime = this.workingTimes[0]; 
+          this.workingTime = this.workingTimes[0];
         } else {
           this.errorMessage = "No patrol logs found for this user.";
         }
@@ -183,6 +183,12 @@ export default {
     this.userId = this.$route.query.id;
     console.log("User ID from URL:", this.userId);
     this.getWorkingTimes();
+  },
+  watch: {
+    "$route.query.id": function (newId) {
+      this.userId = newId; // Mettre à jour userId
+      this.getWorkingTimes(); // Récupérer à nouveau les working times
+    },
   },
 };
 </script>
