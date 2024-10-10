@@ -1,61 +1,120 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-      <div class="bg-indigo-600 p-6">
-        <h1 class="text-3xl font-extrabold text-white text-center">Gestion du Temps</h1>
-      </div>
+  <div class="flex flex-col items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+      <h1 class="text-2xl font-bold mb-4">Gestion des heures de travail</h1>
       
-      <div class="p-6 space-y-6">
-        <div class="text-center">
-          <p v-if="clockIn" class="text-lg font-medium text-green-600">
-            <span class="block text-sm text-gray-500">En service depuis :</span>
-            {{ startDateTime }}
-          </p>
-          <p v-else class="text-lg font-medium text-red-600">
-            Vous n'êtes pas en service actuellement.
-          </p>
-        </div>
-
-        <button
-          @click="clock"
-          :class="clockIn ? 'bg-red-500 hover:bg-red-600 focus:ring-red-300' : 'bg-green-500 hover:bg-green-600 focus:ring-green-300'"
-          class="w-full py-3 px-4 text-white font-bold rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4"
-        >
-          {{ clockIn ? 'Terminer le service' : 'Commencer le service' }}
-        </button>
-
-        <button
-          @click="refresh"
-          class="w-full py-3 px-4 bg-indigo-500 text-white font-bold rounded-lg shadow-md hover:bg-indigo-600 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300"
-        >
-          Actualiser
-        </button>
+      <div class="mb-4">
+        <p v-if="clockIn" class="text-green-500">Vous êtes en train de travailler depuis : {{ startDateTime }}</p>
+        <p v-else class="text-red-500">Vous n'êtes pas actuellement en train de travailler.</p>
       </div>
+
+      <button
+        @click="clock"
+        :disabled="loading"
+        :class="[
+          clockIn ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600',
+          loading ? 'opacity-50 cursor-not-allowed' : ''
+        ]"
+        class="text-white font-bold py-2 px-4 rounded mb-4 w-full"
+      >
+        {{ clockIn ? 'Arrêter le travail' : 'Commencer le travail' }}
+      </button>
+
+      <button
+        @click="refresh"
+        :disabled="loading"
+        :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full"
+      >
+        Rafraîchir
+      </button>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+import api from '@/services/api';
 
-const clockIn = ref(false);
-const startDateTime = ref(null);
+export default {
+  data() {
+    return {
+      clockIn: false,
+      startDateTime: null,
+      loading: false,
+      userId: '2' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
+    };
+  },
+  methods: {
+    async refresh() {
+      this.loading = true;
+      try {
+        const response = await api.getClocks(this.userId);
+        if (response.data && response.data.length > 0) {
+          const lastClock = response.data[response.data.length - 1];
+          this.clockIn = lastClock.status === 'false'; // 'false' indique que l'utilisateur est en train de travailler
+          this.startDateTime = this.clockIn ? new Date(lastClock.time).toLocaleString() : null;
+        } else {
+          this.clockIn = false;
+          this.startDateTime = null;
+        }
+        console.log('État rafraîchi');
+      } catch (error) {
+        console.error('Erreur lors du rafraîchissement:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
 
-const refresh = () => {
-  clockIn.value = false;
-  startDateTime.value = null;
-  console.log('État actualisé');
-};
-
-const clock = () => {
-  if (clockIn.value) {
-    clockIn.value = false;
-    startDateTime.value = null;
-    console.log('Service terminé');
-  } else {
-    clockIn.value = true;
-    startDateTime.value = new Date().toLocaleString();
-    console.log('Service commencé à :', startDateTime.value);
+    async clock() {
+      this.loading = true;
+      try {
+        const newStatus = !this.clockIn;
+        const response = await api.postClock(this.userId, new Date().toISOString(), newStatus);
+        console.log(response.data);
+        this.clockIn = newStatus;
+        this.startDateTime = newStatus ? new Date().toLocaleString() : null;
+        console.log(newStatus ? 'Début du travail' : 'Arrêt du travail');
+      } catch (error) {
+        console.error('Erreur lors du changement d\'état:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
+  },
+  mounted() {
+    this.refresh(); // Charger l'état initial au montage du composant
   }
 };
 </script>
+```
+
+Voici les principales modifications apportées :
+
+1. Intégration de l'API :
+   - Les méthodes `refresh()` et `clock()` utilisent maintenant les fonctions du service API que vous avez défini.
+
+2. Gestion asynchrone :
+   - Les méthodes sont maintenant asynchrones (`async`) et utilisent `await` pour les appels API.
+
+3. Gestion des erreurs :
+   - Ajout de blocs try/catch pour gérer les erreurs potentielles lors des appels API.
+
+4. État de chargement :
+   - Ajout d'un état `loading` pour désactiver les boutons pendant les appels API.
+
+5. Initialisation au montage :
+   - Ajout d'un appel à `refresh()` dans le hook `mounted` pour charger l'état initial.
+
+6. Adaptation à la structure de données de l'API :
+   - La méthode `refresh()` interprète maintenant les données renvoyées par l'API pour déterminer l'état de travail actuel.
+
+7. Gestion de l'ID utilisateur :
+   - Ajout d'une propriété `userId` dans les données du composant. Vous devrez adapter cela pour récupérer l'ID de l'utilisateur actuel de manière appropriée dans votre application.
+
+Pour que ce composant fonctionne correctement, assurez-vous que :
+
+1. Le service API est correctement importé et configuré.
+2. L'ID de l'utilisateur est correctement défini ou récupéré.
+3. Les réponses de l'API correspondent à la structure attendue par le composant.
+
+N'oubliez pas d'adapter la gestion des erreurs et les messages utilisateur selon vos besoins spécifiques. Vous pourriez par exemple ajouter des notifications pour informer l'utilisateur du succès ou de l'échec des opérations.

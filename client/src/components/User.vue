@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
     <div class="user-container">
         <!-- Card for Input Fields and Buttons -->
