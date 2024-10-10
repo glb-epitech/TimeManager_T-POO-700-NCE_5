@@ -13,6 +13,11 @@ defmodule TimeManagerWeb.UserController do
     render(conn, :show, user: user)
   end
 
+  def show_user_by_email_and_username(conn, %{"username" => username, "email" => email}) do
+    user = Accounts.get_user_by_email_and_username(username, email)
+    render(conn, :show, user: user)
+  end
+
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn

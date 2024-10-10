@@ -103,22 +103,22 @@ defmodule TimeManager.Accounts do
   end
 
   @doc """
-  Returns users filtered by email and username.
+  Returns user filtered by email and username.
 
   ## Examples
 
-      iex> get_users_by_email_and_username("test@example.com", "testuser")
+      iex> get_user_by_email_and_username("test@example.com", "testuser")
       [%User{}, ...]
 
-      iex> get_users_by_email_and_username("invalid@example.com", "invaliduser")
+      iex> get_user_by_email_and_username("invalid@example.com", "invaliduser")
       []
 
   """
-  def get_users_by_email_and_username(email, username) do
+  def get_user_by_email_and_username(username, email) do
     query =
       from u in User,
         where: u.email == ^email and u.username == ^username
 
-    Repo.all(query)
+    Repo.one(query)
   end
 end
