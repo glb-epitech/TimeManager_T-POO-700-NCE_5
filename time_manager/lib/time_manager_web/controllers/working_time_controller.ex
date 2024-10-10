@@ -4,24 +4,25 @@ defmodule TimeManagerWeb.WorkingTimeController do
   alias TimeManager.TimeTracking.WorkingTime
 
   action_fallback TimeManagerWeb.FallbackController
-  
+
   # GET /api/workingtimes
   def index(conn, _params) do
     working_times = TimeTracking.list_workingtimes()
     render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
   end
 
-  # GET /api/workingtimes/:user_id
-  def index(conn, %{"user_id" => user_id}) do
-    working_times = TimeTracking.list_workingtimes_for_user(user_id)
-    render(conn, "index.json", working_times: working_times)
-  end
+
 
   # GET /api/workingtimes/:user_id?start=START_DATE&end=END_DATE
-  def index(conn, %{"user_id" => user_id, "start" => start_date, "end" => end_date}) do
-    working_times = TimeTracking.list_working_times(user_id, start_date, end_date)
+  def list_working_time_by_user(conn, %{"user_id" => user_id}) do
+    working_times = TimeTracking.list_working_times(user_id)
     render(conn, TimeManagerWeb.WorkingTimeJSON, "index.json", working_times: working_times)
   end
+
+
+
+
+
 
   # GET /api/workingtimes/:user_id/:id
   def show(conn, %{"id" => id}) do

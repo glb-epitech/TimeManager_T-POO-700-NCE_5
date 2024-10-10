@@ -55,7 +55,7 @@ defmodule TimeManager.TimeTracking do
 
     Repo.all(query)
   end
-  
+
   @doc """
   Creates a clock.
 
@@ -205,6 +205,22 @@ defmodule TimeManager.TimeTracking do
     |> Repo.update()
   end
 
+
+
+
+  def list_working_times(user_id) do
+   query =
+    from w in WorkingTime,
+    where: w.user_id == ^user_id,
+    order_by: [desc: w.start]
+    Repo.all(query)
+  end
+
+
+
+
+
+
   @doc """
   Deletes a working_time.
 
@@ -233,4 +249,15 @@ defmodule TimeManager.TimeTracking do
   def change_working_time(%WorkingTime{} = working_time, attrs \\ %{}) do
     WorkingTime.changeset(working_time, attrs)
   end
+
+
+
+
+
+
+
+
+
+
+
 end
