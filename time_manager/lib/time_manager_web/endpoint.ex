@@ -51,4 +51,5 @@ defmodule TimeManagerWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
   plug TimeManagerWeb.Router
+  plug CORSPlug, origin: ["http://localhost:5173/"]
 end

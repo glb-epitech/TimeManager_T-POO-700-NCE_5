@@ -1,36 +1,41 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-      <h1 class="text-2xl font-bold mb-4">Gestion des heures de travail</h1>
-      
-      <div class="mb-4">
-        <p v-if="clockIn" class="text-green-500">Vous êtes en train de travailler depuis : {{ startDateTime }}</p>
-        <p v-else class="text-red-500">Vous n'êtes pas actuellement en train de travailler.</p>
-      </div>
+  <div class="bg-bat-gray rounded-lg shadow-bat p-6">
+    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Gotham Time Tracker</h2>
+    
+    <div class="mb-6">
+      <p v-if="clockIn" class="text-bat-blue font-semibold">
+        Vigilance active depuis : <span class="text-bat-yellow">{{ startDateTime }}</span>
+      </p>
+      <p v-else class="text-bat-silver">Aucune patrouille en cours.</p>
+    </div>
 
-      <button
-        @click="clock"
-        :disabled="loading"
-        :class="[
-          clockIn ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600',
-          loading ? 'opacity-50 cursor-not-allowed' : ''
-        ]"
-        class="text-white font-bold py-2 px-4 rounded mb-4 w-full"
-      >
-        {{ clockIn ? 'Arrêter le travail' : 'Commencer le travail' }}
-      </button>
+    <button
+      @click="clock"
+      :disabled="loading"
+      :class="[
+        clockIn ? 'bg-bat-blue' : 'bg-bat-yellow',
+        'text-bat-black font-bold py-3 px-6 rounded-full shadow-bat hover:opacity-90 transition duration-300 w-full mb-4',
+        loading ? 'opacity-50 cursor-not-allowed' : ''
+      ]"
+    >
+      {{ clockIn ? 'Terminer la patrouille' : 'Débuter la patrouille' }}
+    </button>
 
-      <button
-        @click="refresh"
-        :disabled="loading"
-        :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
-        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full"
-      >
-        Rafraîchir
-      </button>
+    <button
+      @click="refresh"
+      :disabled="loading"
+      :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
+      class="bg-bat-gray border border-bat-yellow text-bat-yellow font-bold py-3 px-6 rounded-full shadow-bat hover:bg-bat-yellow hover:text-bat-black transition duration-300 w-full"
+    >
+      Actualiser le statut
+    </button>
+
+    <div v-if="loading" class="mt-4 text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"></div>
     </div>
   </div>
 </template>
+
 
 <script>
 import api from '@/services/api';
@@ -41,7 +46,7 @@ export default {
       clockIn: false,
       startDateTime: null,
       loading: false,
-      userId: '1' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
+      userId: '2' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
     };
   },
   methods: {
