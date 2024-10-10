@@ -13,10 +13,6 @@ defmodule TimeManagerWeb.WorkingTimeController do
 
 
 
-
-
-
-
   # GET /api/workingtimes/:user_id?start=START_DATE&end=END_DATE
   def list_working_time_by_user(conn, %{"user_id" => user_id}) do
     working_times = TimeTracking.list_working_times(user_id)

@@ -1,4 +1,3 @@
-
 <template>
   <div id="app" class="flex flex-col min-h-screen">
     <header class="flex justify-between items-center w-full p-4 bg-gray-800 text-white">
@@ -12,6 +11,9 @@
     <main class="flex-grow">
       <router-view></router-view> <!-- Affiche le composant correspondant à la route -->
     </main>
+    <div>
+      <User />
+    </div>
     <footer class="bg-gray-800 text-white text-center p-4">
       <p>&copy; 2024 Time Manager. Tous droits réservés.</p>
     </footer>
@@ -19,6 +21,7 @@
 </template>
 
 <script setup>
+  import User from './components/User.vue'
 </script>
 
 <style scoped>

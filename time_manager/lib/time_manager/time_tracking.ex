@@ -50,8 +50,8 @@ defmodule TimeManager.TimeTracking do
   def list_clocks_for_user(user_id) do
     query =
       from c in Clock,
-        where: c.user_id == ^user_id,
-        order_by: [desc: c.time]
+      where: c.user_id == ^user_id,
+      order_by: [desc: c.time]
 
     Repo.all(query)
   end
@@ -134,6 +134,23 @@ defmodule TimeManager.TimeTracking do
   """
   def list_workingtimes do
     Repo.all(WorkingTime)
+  end
+
+  @doc """
+  Returns the list of all working times for a specific user
+
+  ## Examples
+
+      iex> list_workingtimes_for_user(1)
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_for_user(user_id) do
+    query =
+      from w in WorkingTime,
+        where: w.user_id == ^user_id,  # Ensure the user_id is properly referenced
+        order_by: [asc: w.start]
+    Repo.all(query)
   end
 
   @doc """

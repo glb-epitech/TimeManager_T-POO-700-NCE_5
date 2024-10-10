@@ -11,11 +11,11 @@ defmodule TimeManagerWeb.ClockController do
     render(conn, TimeManagerWeb.ClockJSON, "index.json", clocks: clocks)
   end
 
-  # GET /api/clocks/:user_id
-  # Fetches all clock records for a user (both clock-ins and clock-outs)
-  def index(conn, %{"user_id" => user_id}) do
+  # GET /clocks/user/:user_id
+  def list_user_clocks(conn, %{"user_id" => user_id}) do
     clocks = TimeTracking.list_clocks_for_user(user_id)
     render(conn, TimeManagerWeb.ClockJSON, "index.json", clocks: clocks)
+    end
   end
 
   # POST /api/clocks/:user_id
