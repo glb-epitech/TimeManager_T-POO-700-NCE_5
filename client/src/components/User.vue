@@ -150,15 +150,6 @@ export default {
     async getUser() {
       try {
         if (this.userName && this.userEmail) {
-          // Add query params to the URL for username and email
-          this.$router.push({
-            path: "/",
-            query: {
-              username: this.userName,
-              email: this.userEmail,
-            },
-          });
-
           // Fetch user data by username and email
           const response = await axios.get(
             `http://localhost:4000/api/users/user`,
@@ -170,6 +161,14 @@ export default {
             }
           );
           this.userData = response.data;
+          
+          // Add query params to the URL for userId
+          this.$router.push({
+            path: "/",
+            query: {
+                id: this.userData.data.id
+            },
+          });
         } else if (this.userId) {
           // Add query params to the URL for userId
           this.$router.push({
