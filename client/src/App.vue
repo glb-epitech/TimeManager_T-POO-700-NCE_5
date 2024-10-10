@@ -5,9 +5,13 @@
       <nav>
         <router-link to="/" class="p-2 hover:bg-gray-700 rounded">Home</router-link>
         <router-link to="/clock" class="p-2 hover:bg-gray-700 rounded">Clock Manager</router-link>
-        <router-link to="/workingtimes" class="p-2 hover:bg-gray-700 rounded">workingTimes</router-link>
       </nav>
     </header>
+
+    <div>
+      <WorkingTimes />
+    </div>
+
     <main class="flex-grow">
       <router-view></router-view> <!-- Affiche le composant correspondant à la route -->
     </main>
@@ -19,6 +23,11 @@
     </footer>
   </div>
 </template>
+
+
+<!-- <script setup>
+  import WorkingTimes from './views/WorkinTimes.vue'
+</script> -->
 
 <script setup>
   import User from './components/User.vue'
