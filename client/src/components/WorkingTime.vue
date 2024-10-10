@@ -3,74 +3,59 @@
       <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold mb-4">Management des Working Times</h1>
   
-        <button @click="getWorkingTimesByUserId" class="font-bold py-2 px-4 rounded mb-4 w-full">
-          Load Working Times
-        </button>
+        <div class="flex items-center mb-4">
+            <button 
+                @click="createWorkingTime({ working_time: { start: startTime, end: endTime } })"
+                class="font-bold py-2 px-4 rounded"
+            >Create</button>
+            <input 
+              v-model="startTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
+            />
+            <input 
+              v-model="endTime" 
+              type="datetime-local" 
+              class="mr-2 p-2 border rounded"
+            />
+        </div>
 
+        <!-- Display existing working times IDs in a grid -->
         <div v-if="workingTimes.length">
           <h2 class="text-xl font-bold mb-2">Working Times:</h2>
-          <table class="table-auto w-full">
-            <thead>
-              <tr>
-                <th class="px-4 py-2">ID</th>
-                <th class="px-4 py-2">Start</th>
-                <th class="px-4 py-2">End</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(time, index) in workingTimes" :key="index">
-                <td class="border px-4 py-2">{{ time.id }}</td>
-                <td class="border px-4 py-2">{{ time.start }}</td>
-                <td class="border px-4 py-2">{{ time.end }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div
+              v-for="(time, index) in workingTimes"
+              :key="index"
+              @click="selectWorkingTime(time.id)"
+              :class="{'selected-cell': selectedWorkingTime && selectedWorkingTime.id === time.id, 'border p-2 cursor-pointer': true}"
+            >
+              {{ time.id }}
+            </div>
+          </div>
         </div>
         <div v-else>
           <p>No working times available.</p>
         </div>
 
-        <div class="flex items-center mb-4">
-            <input 
-              v-model="startTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
-            />
-            <input 
-              v-model="endTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
-            />
+        <!-- Display selected working time details in update format -->
+        <div>
+          <h2 class="text-xl font-bold mt-4">Selected Working Time:</h2>
+          <div class="flex items-center mb-4">
+            <input v-model="startTime" type="datetime-local" class="mr-2 p-2 border rounded" />
+            <input v-model="endTime" type="datetime-local" class="mr-2 p-2 border rounded" />
+          </div>
+          <div class="flex items-center mb-4">
             <button 
-              @click="createWorkingTime({ working_time: { start: startTime, end: endTime } })"
+              @click="updateWorkingTime({ working_time: { start: startTime, end: endTime } })" 
+              :disabled="!timesChanged" 
+              :class="{ 'deactivated-button': !timesChanged }"
               class="font-bold py-2 px-4 rounded"
-            >Create</button>
+              >Update
+            </button>
+            <button @click="deleteWorkingTime()" class="font-bold py-2 px-4 rounded">Delete</button>
+          </div>
         </div>
-        <div class="flex items-center mb-4">
-            <input 
-              v-model="startTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
-            />
-            <input 
-              v-model="endTime" 
-              type="datetime-local" 
-              class="mr-2 p-2 border rounded"
-            />
-            <button 
-              @click="updateWorkingTime({ working_time: { start: startTime, end: endTime } })"
-              class="font-bold py-2 px-4 rounded"
-            >Update</button>
-        </div>
- 
-        <div class="flex items-center mb-4">       
-          <button 
-              @click="deleteWorkingTime()"
-              class="font-bold py-2 px-4 rounded mb-4 w-full"
-            >Delete
-          </button>
-        </div>
-          
       </div>
     </div>
     <div>
@@ -96,7 +81,16 @@
   data() {
     return {
       workingTimes: [],
+      selectedWorkingTime: null,
+      startTime: '',
+      endTime: ''
     };
+  },
+  computed: {
+    timesChanged() {
+      if (!this.selectedWorkingTime) return false;
+      return this.startTime !== this.formatDateTime(this.selectedWorkingTime.start) || this.endTime !== this.formatDateTime(this.selectedWorkingTime.end);
+    }
   },
     methods: {
       async getWorkingTimesByUserId() {
@@ -120,7 +114,7 @@
       },
       async updateWorkingTime(data) {
         try {
-          const response = await axios.put(`http://localhost:4000/api/workingtime/9`, data);
+          const response = await axios.put(`http://localhost:4000/api/workingtime/${this.selectedWorkingTime.id}`, data);
           this.getWorkingTimesByUserId();
           console.log('Working time updated:', response.data);
         } catch (error) {
@@ -129,13 +123,25 @@
       },
       async deleteWorkingTime() {
         try {
-          const response = await axios.put(`http://localhost:4000/api/workingtime/9`);
+          const response = await axios.delete(`http://localhost:4000/api/workingtime/${this.selectedWorkingTime.id}`);
           this.getWorkingTimesByUserId();
+          this.selectedWorkingTime = null; // Clear the selected working time
+          this.startTime = ''; // Reset the start time picker
+          this.endTime = ''; // Reset the end time picker
           console.log('Working time deleted:', response.data);
         } catch (error) {
           console.error('Error deleting working time:', error);
         }
-      }
+      },
+      formatDateTime(datetime) {
+        return datetime.slice(0, 16);
+      },
+      selectWorkingTime(id) {
+        const selected = this.workingTimes.find(time => time.id === id);
+        this.selectedWorkingTime = selected;
+        this.startTime = this.formatDateTime(selected.start);
+        this.endTime = this.formatDateTime(selected.end);
+      },
     },
     created() {
       this.getWorkingTimesByUserId();
@@ -144,6 +150,20 @@
   </script>
   
   <style scoped>
-  /* Your component styles here */
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  .selected-cell {
+    background-color: grey;
+    color: white;
+    font-weight: bold;
+  }
+  .deactivated-button {
+    color: grey;
+  }
   </style>
   
