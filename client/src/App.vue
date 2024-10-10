@@ -1,3 +1,4 @@
+
 <template>
   <div id="app" class="flex flex-col min-h-screen">
     <header class="flex justify-between items-center w-full p-4 bg-gray-800 text-white">
@@ -5,6 +6,7 @@
       <nav>
         <router-link to="/" class="p-2 hover:bg-gray-700 rounded">Home</router-link>
         <router-link to="/clock" class="p-2 hover:bg-gray-700 rounded">Clock Manager</router-link>
+        <router-link to="/workingtimes" class="p-2 hover:bg-gray-700 rounded">workingTimes</router-link>
       </nav>
     </header>
     <main class="flex-grow">
