@@ -20,14 +20,24 @@
         <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Working Times</h2>
         <WorkingTimes />
       </div>
+
+      <!-- Chart Manager Card -->
+      <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300 lg:col-span-3">
+        <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Vigilante Analytics</h2>
+        <ChartManager :userId="currentUserId" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import ClockManager from '@/components/ClockManager.vue';
 import User from '@/components/User.vue';
 import WorkingTimes from '@/components/WorkingTimes.vue';
+import ChartManager from '@/components/ChartManager.vue';
+
+const currentUserId = ref('15'); // Remplacez par l'ID de l'utilisateur actuel ou une logique pour l'obtenir
 </script>
 
 <style>

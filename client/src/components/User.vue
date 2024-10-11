@@ -2,22 +2,22 @@
 <template>
   <div class="bg-bat-gray rounded-lg shadow-bat p-6">
     <h2 class="text-2xl font-bold mb-6 text-bat-yellow">
-      Gotham Citizens Database
+      Base de Données des Citoyens de Gotham
     </h2>
 
-    <!-- Input Fields -->
+    <!-- Champs de saisie -->
     <div class="space-y-4 mb-6">
       <div>
         <label
           for="userName"
           class="block text-sm font-medium text-bat-silver mb-1"
-          >Alias:</label
+          >Alias :</label
         >
         <input
           type="text"
           v-model="userName"
           id="userName"
-          placeholder="Enter citizen's alias"
+          placeholder="Entrez l'alias du citoyen"
           class="w-full px-3 py-2 bg-bat-black border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow"
         />
       </div>
@@ -26,13 +26,13 @@
         <label
           for="userEmail"
           class="block text-sm font-medium text-bat-silver mb-1"
-          >Communication Channel:</label
+          >Canal de Communication :</label
         >
         <input
           type="email"
           v-model="userEmail"
           id="userEmail"
-          placeholder="Enter secure email"
+          placeholder="Entrez l'email sécurisé"
           class="w-full px-3 py-2 bg-bat-black border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow"
         />
       </div>
@@ -41,65 +41,65 @@
         <label
           for="userId"
           class="block text-sm font-medium text-bat-silver mb-1"
-          >Identification Code:</label
+          >Code d'Identification :</label
         >
         <input
           type="text"
           v-model="userId"
           id="userId"
-          placeholder="Enter unique ID"
+          placeholder="Entrez l'ID unique"
           class="w-full px-3 py-2 bg-bat-black border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow"
         />
       </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Boutons d'action -->
     <div class="grid grid-cols-2 gap-4 mb-6">
       <button @click="createUser" class="bat-button bg-bat-blue">
-        Register Citizen
+        Enregistrer le Citoyen
       </button>
       <button
         @click="getAllUsers"
         class="bat-button bg-bat-yellow text-bat-black"
       >
-        View All Citizens
+        Voir Tous les Citoyens
       </button>
       <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
-        Locate Citizen
+        Localiser le Citoyen
       </button>
       <button @click="updateUser" class="bat-button bg-bat-blue">
-        Update Records
+        Mettre à Jour les Dossiers
       </button>
       <button @click="deleteUser" class="bat-button bg-red-600 col-span-2">
-        Expunge Records
+        Effacer les Dossiers
       </button>
     </div>
 
-    <!-- User Info Display -->
+    <!-- Affichage des informations de l'utilisateur -->
     <div
       v-if="userData"
       class="mt-6 p-4 bg-bat-black rounded-lg border border-bat-yellow"
     >
       <h3 class="text-lg font-semibold mb-2 text-bat-yellow">
-        Citizen Profile
+        Profil du Citoyen
       </h3>
       <p class="text-bat-silver">
-        <strong class="text-bat-blue">ID:</strong> {{ userData.data.id }}
+        <strong class="text-bat-blue">ID :</strong> {{ userData.data.id }}
       </p>
       <p class="text-bat-silver">
-        <strong class="text-bat-blue">Alias:</strong>
+        <strong class="text-bat-blue">Alias :</strong>
         {{ userData.data.username }}
       </p>
       <p class="text-bat-silver">
-        <strong class="text-bat-blue">Channel:</strong>
+        <strong class="text-bat-blue">Canal :</strong>
         {{ userData.data.email }}
       </p>
     </div>
 
-    <!-- All Users Display -->
+    <!-- Affichage de tous les utilisateurs -->
     <div v-if="users.data && users.data.length" class="mt-6">
       <h3 class="text-lg font-semibold mb-2 text-bat-yellow">
-        Gotham Citizens Registry
+        Registre des Citoyens de Gotham
       </h3>
       <ul class="bg-bat-black rounded-lg divide-y divide-bat-gray">
         <li
