@@ -1,12 +1,12 @@
 <template>
   <div class="bg-bat-gray rounded-lg shadow-bat p-6">
-    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Gotham Patrol Log</h2>
+    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Journal de Patrouille de Gotham</h2>
 
     <div v-if="loading" class="text-center py-4">
       <div
         class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"
       ></div>
-      <p class="mt-2 text-bat-silver">Accessing Bat-Computer...</p>
+      <p class="mt-2 text-bat-silver">Accès au Bat-Ordinateur en cours...</p>
     </div>
 
     <div
@@ -14,7 +14,7 @@
       class="bg-red-900 border-l-4 border-bat-yellow text-bat-silver p-4 mb-4"
       role="alert"
     >
-      <p class="font-bold">Alert</p>
+      <p class="font-bold">Alerte</p>
       <p>{{ errorMessage }}</p>
     </div>
     <div
@@ -27,21 +27,21 @@
         class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver"
       >
         <div>
-          <p class="text-bat-yellow font-semibold">Mission ID:</p>
+          <p class="text-bat-yellow font-semibold">ID de Mission :</p>
           <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">Vigilante ID:</p>
+          <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
           <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">Patrol Start:</p>
+          <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
           <p class="text-bat-blue text-xl">
             {{ formatTime(workingTime.start) }}
           </p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">Patrol End:</p>
+          <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
           <p class="text-bat-blue text-xl">{{ formatTime(workingTime.end) }}</p>
         </div>
         <div class="mt-6 flex justify-end space-x-4">
@@ -49,33 +49,33 @@
             @click="editWorkingTime(workingTime)"
             class="px-4 py-2 bg-bat-blue text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
           >
-            Edit Patrol Log
+            Modifier le Journal
           </button>
           <button
             @click="deleteWorkingTime(workingTime.id)"
             class="px-4 py-2 bg-red-600 text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
           >
-            Delete Log
+            Supprimer le Journal
           </button>
         </div>
       </div>
     </div>
 
     <div v-else class="text-center py-4 text-bat-silver">
-      No patrol log found. The night is quiet.
+      Aucun journal de patrouille trouvé. La nuit est calme.
     </div>
 
-    <!-- Edit Form -->
+    <!-- Formulaire de modification -->
     <div v-if="editMode" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
       <h3 class="text-lg font-semibold mb-4 text-bat-yellow">
-        Edit Patrol Log
+        Modifier le Journal de Patrouille
       </h3>
       <form @submit.prevent="updateWorkingTime" class="space-y-4">
         <div>
           <label
             for="editStartTime"
             class="block text-sm font-medium text-bat-silver mb-1"
-            >Patrol Start:</label
+            >Début de Patrouille :</label
           >
           <input
             type="datetime-local"
@@ -89,7 +89,7 @@
           <label
             for="editEndTime"
             class="block text-sm font-medium text-bat-silver mb-1"
-            >Patrol End:</label
+            >Fin de Patrouille :</label
           >
           <input
             type="datetime-local"
@@ -105,13 +105,13 @@
             @click="editMode = false"
             class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
           >
-            Cancel
+            Annuler
           </button>
           <button
             type="submit"
             class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
           >
-            Update Log
+            Mettre à Jour le Journal
           </button>
         </div>
       </form>

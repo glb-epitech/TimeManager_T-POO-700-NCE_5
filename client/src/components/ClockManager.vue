@@ -46,7 +46,8 @@ export default {
       clockIn: false,
       startDateTime: null,
       loading: false,
-      userId: '2' // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
+      userId: null
+       // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
     };
   },
   methods: {
@@ -88,6 +89,9 @@ export default {
   },
   mounted() {
     this.refresh(); // Charger l'état initial au montage du composant
+    this.userId = this.$route.query.id;
+    console.log("User ID from URL:", this.userId);
+    this.getWorkingTimes();
   }
 };
 </script>
