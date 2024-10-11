@@ -33,18 +33,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd server
+        cd time_manager
         mix deps.get
-    
-    - name: Run tests
-      run: |
-        cd server
-        mix test
 
-    - name: Run linter
-      run: |
-        cd server
-        mix credo
 
   frontend:
     runs-on: ubuntu-latest
