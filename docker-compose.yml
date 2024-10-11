@@ -40,8 +40,6 @@ services:
       - "8080:8080"
     networks:
       - app_network
-    volumes:
-      - ./client:/app
 
   pgadmin:
     image: dpage/pgadmin4:latest  
