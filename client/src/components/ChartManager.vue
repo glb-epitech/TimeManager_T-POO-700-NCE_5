@@ -1,6 +1,6 @@
 <template>
   <div class="bg-bat-gray rounded-lg shadow-bat p-6">
-    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Analytique du Vigilant de Gotham - Utilisateur {{ userId }}</h2>
+    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Analytique du Vigilant de Gotham - Utilisateur {{ displayUserId }}</h2>
 
     <div v-if="loading" class="text-center py-4">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"></div>
@@ -28,110 +28,137 @@
     </button>
   </div>
 </template>
-  
-  <script>
-  import { ref, onMounted, computed } from 'vue';
-  import axios from 'axios';
-  import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-  import { Pie } from 'vue-chartjs'
-  
-  ChartJS.register(ArcElement, Tooltip, Legend)
-  
-  export default {
-    name: 'ChartManager',
-    components: { Pie },
-    props: {
-      userId: {
-        type: String,
-        required: true,
-      },
-    },
-    setup(props) {
-      const loading = ref(true);
-      const errorMessage = ref(null);
-      const workingTimes = ref([]);
-      const timeDistributionData = ref(null);
-  
-      const batColors = {
-        yellow: '#FFFF00',
-        silver: '#C0C0C0',
-        black: '#0A0A0A',
-      };
-  
-      const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            labels: {
-              color: batColors.silver,
-            },
+
+<script>
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+import { Pie } from 'vue-chartjs'
+
+ChartJS.register(ArcElement, Tooltip, Legend)
+
+export default {
+  name: 'ChartManager',
+  components: { Pie },
+  setup() {
+    const route = useRoute();
+    const loading = ref(true);
+    const errorMessage = ref(null);
+    const workingTimes = ref([]);
+    const timeDistributionData = ref(null);
+    const userId = ref(null);
+    const displayUserId = computed(() => userId.value || 'Non sélectionné');
+
+    const batColors = {
+      yellow: '#FFFF00',
+      silver: '#C0C0C0',
+      black: '#0A0A0A',
+    };
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: batColors.silver,
           },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                const percentage = ((value / total) * 100).toFixed(1);
-                return `${label}: ${percentage}% (${formatDuration(value)})`;
-              },
+        },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return `${label}: ${percentage}% (${formatDuration(value)})`;
             },
           },
         },
+      },
+    };
+
+    const formatDuration = (minutes) => {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return `${hours}h ${mins}m`;
+    };
+
+    const fetchData = async () => {
+      console.log("Fetching data for user ID:", userId.value);
+      if (!userId.value) {
+        errorMessage.value = "Aucun utilisateur sélectionné";
+        return;
+      }
+      loading.value = true;
+      errorMessage.value = null;
+      try {
+        const response = await axios.get(`http://localhost:4000/api/workingtimes/${userId.value}`);
+        console.log("API response:", response.data);
+        workingTimes.value = response.data.data;
+        processChartData();
+      } catch (error) {
+        console.error("Error details:", error.response || error);
+        errorMessage.value = "Error accessing Bat-Computer. Try again.";
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const processChartData = () => {
+      if (!workingTimes.value || workingTimes.value.length === 0) {
+        console.log("No working times data available");
+        return;
+      }
+      const timeData = workingTimes.value.map(time => {
+        const start = new Date(time.start);
+        const end = new Date(time.end);
+        return (end - start) / (1000 * 60); // duration in minutes
+      });
+
+      timeDistributionData.value = {
+        labels: workingTimes.value.map((_, index) => `Patrol ${index + 1}`),
+        datasets: [{
+          data: timeData,
+          backgroundColor: Object.values(batColors),
+        }],
       };
-  
-      const formatDuration = (minutes) => {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours}h ${mins}m`;
-      };
-  
-      const fetchData = async () => {
-        loading.value = true;
-        errorMessage.value = null;
-        try {
-          const response = await axios.get(`http://localhost:4000/api/workingtimes/${props.userId}`);
-          workingTimes.value = response.data.data;
-          processChartData();
-        } catch (error) {
-          errorMessage.value = "Error accessing Bat-Computer. Try again.";
-          console.error("Error retrieving working times:", error);
-        } finally {
-          loading.value = false;
-        }
-      };
-  
-      const processChartData = () => {
-        const timeData = workingTimes.value.map(time => {
-          const start = new Date(time.start);
-          const end = new Date(time.end);
-          return (end - start) / (1000 * 60); // duration in minutes
-        });
-  
-        timeDistributionData.value = {
-          labels: workingTimes.value.map((_, index) => `Patrol ${index + 1}`),
-          datasets: [{
-            data: timeData,
-            backgroundColor: Object.values(batColors),
-          }],
-        };
-      };
-  
-      onMounted(fetchData);
-  
-      const chartData = computed(() => ({
-        labels: timeDistributionData.value ? timeDistributionData.value.labels : [],
-        datasets: timeDistributionData.value ? timeDistributionData.value.datasets : []
-      }));
-  
-      return {
-        loading,
-        errorMessage,
-        chartData,
-        chartOptions,
-        fetchData,
-      };
-    },
-  };
-  </script>
+    };
+
+    onMounted(() => {
+      userId.value = route.query.id;
+      console.log("Component mounted. User ID:", userId.value);
+      if (userId.value) {
+        fetchData();
+      } else {
+        errorMessage.value = "Aucun utilisateur sélectionné";
+      }
+    });
+
+    watch(() => route.query.id, (newId) => {
+      userId.value = newId;
+      console.log("User ID changed to:", userId.value);
+      if (userId.value) {
+        fetchData();
+      } else {
+        errorMessage.value = "Aucun utilisateur sélectionné";
+      }
+    });
+
+    const chartData = computed(() => ({
+      labels: timeDistributionData.value ? timeDistributionData.value.labels : [],
+      datasets: timeDistributionData.value ? timeDistributionData.value.datasets : []
+    }));
+
+    return {
+      loading,
+      errorMessage,
+      chartData,
+      chartOptions,
+      fetchData,
+      displayUserId,
+    };
+  },
+};
+</script>

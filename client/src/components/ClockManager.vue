@@ -33,97 +33,105 @@
     <div v-if="loading" class="mt-4 text-center">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"></div>
     </div>
+
+    <div v-if="error" class="mt-4 text-red-500">
+      {{ error }}
+    </div>
   </div>
 </template>
 
-
 <script>
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import api from '@/services/api';
 
 export default {
-  data() {
-    return {
-      clockIn: false,
-      startDateTime: null,
-      loading: false,
-      userId: null
-       // Remplacez par l'ID de l'utilisateur actuel ou récupérez-le dynamiquement
-    };
-  },
-  methods: {
-    async refresh() {
-      this.loading = true;
+  setup() {
+    const route = useRoute();
+    const clockIn = ref(false);
+    const startDateTime = ref(null);
+    const loading = ref(false);
+    const userId = ref(null);
+    const error = ref(null);
+
+    const refresh = async () => {
+      if (!userId.value) {
+        error.value = "Aucun utilisateur sélectionné";
+        return;
+      }
+      loading.value = true;
+      error.value = null;
       try {
-        const response = await api.getClocks(this.userId);
+        const response = await api.getClocks(userId.value);
+        console.log('API response:', response);
         if (response.data && response.data.length > 0) {
           const lastClock = response.data[response.data.length - 1];
-          this.clockIn = lastClock.status === 'false'; // 'false' indique que l'utilisateur est en train de travailler
-          this.startDateTime = this.clockIn ? new Date(lastClock.time).toLocaleString() : null;
+          clockIn.value = lastClock.status === 'false';
+          startDateTime.value = clockIn.value ? new Date(lastClock.time).toLocaleString() : null;
         } else {
-          this.clockIn = false;
-          this.startDateTime = null;
+          clockIn.value = false;
+          startDateTime.value = null;
         }
         console.log('État rafraîchi');
-      } catch (error) {
-        console.error('Erreur lors du rafraîchissement:', error);
+      } catch (err) {
+        console.error('Erreur lors du rafraîchissement:', err);
+        error.value = "Erreur lors de la récupération des données";
       } finally {
-        this.loading = false;
+        loading.value = false;
       }
-    },
+    };
 
-    async clock() {
-      this.loading = true;
-      try {
-        const newStatus = !this.clockIn;
-        const response = await api.postClock(this.userId, new Date().toISOString(), newStatus);
-        console.log(response.data);
-        this.clockIn = newStatus;
-        this.startDateTime = newStatus ? new Date().toLocaleString() : null;
-        console.log(newStatus ? 'Début du travail' : 'Arrêt du travail');
-      } catch (error) {
-        console.error('Erreur lors du changement d\'état:', error);
-      } finally {
-        this.loading = false;
+    const clock = async () => {
+      if (!userId.value) {
+        error.value = "Aucun utilisateur sélectionné";
+        return;
       }
-    }
-  },
-  mounted() {
-    this.refresh(); // Charger l'état initial au montage du composant
-    this.userId = this.$route.query.id;
-    console.log("User ID from URL:", this.userId);
-    this.getWorkingTimes();
+      loading.value = true;
+      error.value = null;
+      try {
+        const newStatus = !clockIn.value;
+        const response = await api.postClock(userId.value, new Date().toISOString(), newStatus);
+        console.log('API response:', response);
+        clockIn.value = newStatus;
+        startDateTime.value = newStatus ? new Date().toLocaleString() : null;
+        console.log(newStatus ? 'Début du travail' : 'Arrêt du travail');
+      } catch (err) {
+        console.error('Erreur lors du changement d\'état:', err);
+        error.value = "Erreur lors du changement d'état";
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    onMounted(() => {
+      userId.value = route.query.id;
+      console.log("User ID from URL:", userId.value);
+      if (userId.value) {
+        refresh();
+      } else {
+        error.value = "Aucun utilisateur sélectionné";
+      }
+    });
+
+    watch(() => route.query.id, (newId) => {
+      userId.value = newId;
+      console.log("User ID changed to:", userId.value);
+      if (userId.value) {
+        refresh();
+      } else {
+        error.value = "Aucun utilisateur sélectionné";
+      }
+    });
+
+    return {
+      clockIn,
+      startDateTime,
+      loading,
+      userId,
+      error,
+      refresh,
+      clock
+    };
   }
 };
 </script>
-```
-
-Voici les principales modifications apportées :
-
-1. Intégration de l'API :
-   - Les méthodes `refresh()` et `clock()` utilisent maintenant les fonctions du service API que vous avez défini.
-
-2. Gestion asynchrone :
-   - Les méthodes sont maintenant asynchrones (`async`) et utilisent `await` pour les appels API.
-
-3. Gestion des erreurs :
-   - Ajout de blocs try/catch pour gérer les erreurs potentielles lors des appels API.
-
-4. État de chargement :
-   - Ajout d'un état `loading` pour désactiver les boutons pendant les appels API.
-
-5. Initialisation au montage :
-   - Ajout d'un appel à `refresh()` dans le hook `mounted` pour charger l'état initial.
-
-6. Adaptation à la structure de données de l'API :
-   - La méthode `refresh()` interprète maintenant les données renvoyées par l'API pour déterminer l'état de travail actuel.
-
-7. Gestion de l'ID utilisateur :
-   - Ajout d'une propriété `userId` dans les données du composant. Vous devrez adapter cela pour récupérer l'ID de l'utilisateur actuel de manière appropriée dans votre application.
-
-Pour que ce composant fonctionne correctement, assurez-vous que :
-
-1. Le service API est correctement importé et configuré.
-2. L'ID de l'utilisateur est correctement défini ou récupéré.
-3. Les réponses de l'API correspondent à la structure attendue par le composant.
-
-N'oubliez pas d'adapter la gestion des erreurs et les messages utilisateur selon vos besoins spécifiques. Vous pourriez par exemple ajouter des notifications pour informer l'utilisateur du succès ou de l'échec des opérations.
