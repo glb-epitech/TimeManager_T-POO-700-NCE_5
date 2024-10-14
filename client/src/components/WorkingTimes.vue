@@ -1,116 +1,89 @@
 <template>
   <div class="bg-bat-gray rounded-lg shadow-bat p-6">
-    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Journal de Patrouille de Gotham</h2>
+    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">
+      Journal de Patrouille de Gotham
+    </h2>
 
+    <!-- Loading indicator -->
     <div v-if="loading" class="text-center py-4">
-      <div
-        class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"
-      ></div>
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"></div>
       <p class="mt-2 text-bat-silver">Accès au Bat-Ordinateur en cours...</p>
     </div>
 
-    <div
-      v-else-if="errorMessage"
-      class="bg-red-900 border-l-4 border-bat-yellow text-bat-silver p-4 mb-4"
-      role="alert"
-    >
+    <!-- Error message -->
+    <div v-else-if="errorMessage" class="bg-red-900 border-l-4 border-bat-yellow text-bat-silver p-4 mb-4" role="alert">
       <p class="font-bold">Alerte</p>
       <p>{{ errorMessage }}</p>
     </div>
-    <div
-      v-else-if="workingTimes.length > 0"
-      class="bg-bat-black p-6 rounded-lg shadow-inner"
-    >
-      <div
-        v-for="workingTime in workingTimes"
-        :key="workingTime.id"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver"
-      >
+
+<div v-else-if="workingTimes.length > 0" class="bg-bat-black p-6 rounded-lg shadow-inner">
+    <div v-for="workingTime in workingTimes" :key="workingTime.id"
+         class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver">
         <div>
-          <p class="text-bat-yellow font-semibold">ID de Mission :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
+            <p class="text-bat-yellow font-semibold">ID de Mission :</p>
+            <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
+            <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
+            <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
-          <p class="text-bat-blue text-xl">
-            {{ formatTime(workingTime.start) }}
-          </p>
+            <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
+            <p class="text-bat-blue text-xl">
+                {{ formatTimeForDisplay(workingTime.start) }}
+            </p>
         </div>
         <div>
-          <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
-          <p class="text-bat-blue text-xl">{{ formatTime(workingTime.end) }}</p>
+            <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
+            <p class="text-bat-blue text-xl">
+                {{ formatTimeForDisplay(workingTime.end) }}
+            </p>
         </div>
-        <div class="mt-6 flex justify-end space-x-4">
-          <button
-            @click="editWorkingTime(workingTime)"
-            class="px-4 py-2 bg-bat-blue text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
-          >
-            Modifier le Journal
-          </button>
-          <button
-            @click="deleteWorkingTime(workingTime.id)"
-            class="px-4 py-2 bg-red-600 text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
-          >
-            Supprimer le Journal
-          </button>
+        <div class="flex gap-2 mt-2 w-full">
+            <button @click="editWorkingTime(workingTime)"
+                    class="bg-blue-500 text-white py-0.5 px-3 rounded hover:bg-blue-600 w-full text-sm">
+                Modifier le Journal
+            </button>
         </div>
-      </div>
+        <div class="flex gap-2 mt-2 w-full">
+            <button @click="deleteWorkingTime(workingTime.id)"
+                    class="bg-red-500 text-white py-0.5 px-3 rounded hover:bg-red-600 w-full text-sm">
+                Supprimer le Journal
+            </button>
+        </div>
     </div>
+</div>
+
+
 
     <div v-else class="text-center py-4 text-bat-silver">
       Aucun journal de patrouille trouvé. La nuit est calme.
     </div>
 
-    <!-- Formulaire de modification -->
+    <!-- Edit form -->
     <div v-if="editMode" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
       <h3 class="text-lg font-semibold mb-4 text-bat-yellow">
         Modifier le Journal de Patrouille
       </h3>
       <form @submit.prevent="updateWorkingTime" class="space-y-4">
         <div>
-          <label
-            for="editStartTime"
-            class="block text-sm font-medium text-bat-silver mb-1"
-            >Début de Patrouille :</label
-          >
-          <input
-            type="datetime-local"
-            id="editStartTime"
-            v-model="editForm.start"
-            required
-            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow"
-          />
+          <label for="editStartTime" class="block text-sm font-medium text-bat-silver mb-1">Début de Patrouille
+            :</label>
+          <input type="datetime-local" id="editStartTime" v-model="editForm.start" required
+            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
         </div>
         <div>
-          <label
-            for="editEndTime"
-            class="block text-sm font-medium text-bat-silver mb-1"
-            >Fin de Patrouille :</label
-          >
-          <input
-            type="datetime-local"
-            id="editEndTime"
-            v-model="editForm.end"
-            required
-            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow"
-          />
+          <label for="editEndTime" class="block text-sm font-medium text-bat-silver mb-1">Fin de Patrouille :</label>
+          <input type="datetime-local" id="editEndTime" v-model="editForm.end" required
+            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
         </div>
         <div class="flex justify-end space-x-4">
-          <button
-            type="button"
-            @click="editMode = false"
-            class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
-          >
+          <button type="button" @click="editMode = false"
+            class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
             Annuler
           </button>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold"
-          >
+          <button type="submit"
+            class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
             Mettre à Jour le Journal
           </button>
         </div>
@@ -142,13 +115,10 @@ export default {
     async getWorkingTimes() {
       this.loading = true;
       this.errorMessage = null;
-      console.log(`Fetching working times for user ID: ${this.userId}`);
       try {
         const response = await axios.get(
           `http://localhost:4000/api/workingtimes/${this.userId}`
         );
-        console.log("RESPONSE", response);
-
         if (
           response.data &&
           response.data.data &&
@@ -172,21 +142,107 @@ export default {
       }
     },
 
-    formatTime(time) {
+    async deleteWorkingTime(id) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:4000/api/workingtime/${id}`
+        );
+        // console.log("Working time deleted:", response.data);
+        this.workingTimes = this.workingTimes.filter(
+          (workingTime) => workingTime.id !== id
+        );
+      } catch (error) {
+        console.error("Error deleting working time:", error);
+        this.errorMessage = "Erreur lors de la suppression du journal.";
+      }
+    },
+
+    editWorkingTime(workingTime) {
+      this.editForm = {
+        id: workingTime.id,
+        start: this.formatTimeForInput(workingTime.start),
+        end: this.formatTimeForInput(workingTime.end),
+      };
+      this.editMode = true;
+    },
+
+    async updateWorkingTime() {
+  try {
+    if (!this.editForm.start || !this.editForm.end) {
+      console.error("Start or end time is missing.");
+      return;
+    }
+
+    const startUTC = new Date(this.editForm.start).toISOString();
+    const endUTC = new Date(this.editForm.end).toISOString(); 
+
+    const data = {
+      working_time: {
+        start: startUTC,
+        end: endUTC,
+      }
+    };
+
+    const response = await axios.put(
+      `http://localhost:4000/api/workingtime/${this.editForm.id}`,
+      data
+    );
+
+    // console.log("Working time updated:", response.data);
+
+    const index = this.workingTimes.findIndex(workingTime => workingTime.id === this.editForm.id);
+    if (index !== -1) {
+      this.workingTimes[index] = {
+        ...this.workingTimes[index],
+        start: startUTC,
+        end: endUTC,
+      };
+    }
+
+    this.editMode = false;
+    this.editForm = {
+      start: "",
+      end: "",
+    };
+  } catch (error) {
+    console.error("Error updating working time:", error.response ? error.response.data : error);
+    this.errorMessage = "Erreur lors de la mise à jour du journal."; 
+  }
+},
+
+    formatTimeForInput(dateString) {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    },
+
+    formatTimeForDisplay(time) {
       const date = new Date(time);
-      date.setHours(date.getHours() - 2);
       return date.toLocaleString();
     },
   },
+
   mounted() {
     this.userId = this.$route.query.id;
-    console.log("User ID from URL:", this.userId);
     this.getWorkingTimes();
   },
+
+//   formatTime(time) {
+//   const date = new Date(time);
+//   date.setHours(date.getHours() - 2);
+//   return date.toLocaleString();
+// },
+
+
   watch: {
     "$route.query.id": function (newId) {
-      this.userId = newId; // Mettre à jour userId
-      this.getWorkingTimes(); // Récupérer à nouveau les working times
+      this.userId = newId;
+      this.getWorkingTimes();
     },
   },
 };
