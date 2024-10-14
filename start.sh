@@ -23,6 +23,8 @@ docker build -t elixir-app:latest $BACKEND_PATH
 # Creation d'un namespace
 kubectl create namespace time-manager
 
+# Initiation des secrets
+kubectl apply -f postgres_secret.yaml
 
 # Appliquer la configuration Kubernetes
 echo "Application de la configuration Kubernetes..."
