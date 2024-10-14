@@ -1,0 +1,28 @@
+# Utiliser une image de base Elixir
+FROM elixir:latest
+
+# Installer Hex et Rebar
+RUN mix local.hex --force && mix local.rebar --force
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers mix.exs et mix.lock
+COPY mix.exs mix.lock ./
+
+# Copier le reste des fichiers de l'application
+COPY . .
+
+# Installer les dépendances
+RUN mix deps.get
+
+# RUN mix ecto.create
+
+# Compiler l'application
+RUN mix compile
+
+# Exposer le port 4000
+EXPOSE 4000
+
+# Commande pour démarrer l'application
+CMD ["mix", "phx.server"]
