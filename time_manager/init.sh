@@ -1,5 +1,18 @@
 #!/bin/sh
 
+# Print environnement variables for debugging
+echo "Environment variables:"
+echo "DB_HOST: $DB_HOST"
+echo "DB_PORT: $DB_PORT"
+echo "DB_USER: $DB_USER"
+
+# Generate the SECRET_KEY_BASE
+SECRET_KEY_BASE=$(mix phx.gen.secret)
+export SECRET_KEY_BASE
+
+# Print the generated SECRET_KEY_BASE for debugging
+echo "Generated SECRET_KEY_BASE: $SECRET_KEY_BASE"
+
 # Set a timeout for database connection attempts (e.g., 5 minutes)
 TIMEOUT=300
 ELAPSED=0

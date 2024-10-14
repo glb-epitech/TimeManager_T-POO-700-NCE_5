@@ -17,6 +17,8 @@ spec:
       - name: postgres
         image: postgres:latest
         env:
+        - name: POSTGRES_DB
+          value: "postgres"
         - name: POSTGRES_USER
           valueFrom: 
             secretKeyRef:
@@ -71,11 +73,22 @@ spec:
         ports:
         - containerPort: 4000
         env:
-        - name: POSTGRES_USER
-          valueFrom: 
-            configMapKeyRef:
-              name: postgres-configmap
-              key: database_url
+          - name: DB_HOST
+            value: "postgres"
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_default_username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_default_password
+          - name: DATABASE_URL
+            value: "ecto://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/postgres"
         resources:
           requests:
             memory: "64Mi"
@@ -83,9 +96,6 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "500m"
-        # env:
-        # - name: DATABASE_URL
-        #   value: "postgresql://postgres:postgres@postgres:5432/postgres"
       initContainers:
       - name: wait-for-postgres
         image: busybox

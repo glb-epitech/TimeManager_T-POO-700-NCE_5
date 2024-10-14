@@ -4,4 +4,4 @@ metadata:
   name: postgres-configmap
   namespace: time-manager
 data:
-  database_url: postgres
+  database_url: "postgresql://postgres:postgres@postgres:5432/postgres"
