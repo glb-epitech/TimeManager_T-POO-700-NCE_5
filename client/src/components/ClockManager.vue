@@ -3,22 +3,24 @@
     <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Gotham Time Tracker</h2>
     
     <div class="mb-6">
-      <p v-if="clockIn" class="text-bat-blue font-semibold">
-        Vigilance active depuis : <span class="text-bat-yellow">{{ startDateTime }}</span>
+      <p v-if="isClockedIn" class="text-bat-blue font-semibold">
+        Vigilance active depuis : <span class="text-bat-yellow">{{ startTime }}</span>
       </p>
-      <p v-else class="text-bat-silver">Aucune patrouille en cours.</p>
+      <p v-else-if="endTime" class="text-bat-silver">
+        Patrouille terminée à : <span class="text-bat-yellow">{{ endTime }}</span>
+      </p>
     </div>
 
     <button
-      @click="clock"
+      @click="toggleClock"
       :disabled="loading"
       :class="[
-        clockIn ? 'bg-bat-blue' : 'bg-bat-yellow',
+        isClockedIn ? 'bg-bat-blue' : 'bg-bat-yellow',
         'text-bat-black font-bold py-3 px-6 rounded-full shadow-bat hover:opacity-90 transition duration-300 w-full mb-4',
         loading ? 'opacity-50 cursor-not-allowed' : ''
       ]"
     >
-      {{ clockIn ? 'Terminer la patrouille' : 'Débuter la patrouille' }}
+      {{ isClockedIn ? 'Terminer la patrouille' : 'Débuter la patrouille' }}
     </button>
 
     <button
@@ -37,6 +39,30 @@
     <div v-if="error" class="mt-4 text-red-500">
       {{ error }}
     </div>
+
+    <div v-if="apiResponse" class="mt-4">
+      <h3 class="text-xl font-bold mb-2">Détails de la réponse API :</h3>
+      <table class="min-w-full bg-gray-200 border border-gray-400 rounded-lg overflow-hidden">
+        <thead>
+          <tr class="bg-bat-yellow text-bat-black">
+            <!-- <th class="py-2 px-4 border-b border-gray-400">ID de la patrouille</th> -->
+            <th class="py-2 px-4 border-b border-gray-400">Statut</th>
+            <th class="py-2 px-4 border-b border-gray-400">Heure de début</th>
+            <th class="py-2 px-4 border-b border-gray-400">Heure de fin</th>
+            <!-- <th class="py-2 px-4 border-b border-gray-400">ID de l'utilisateur</th> -->
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <!-- <td class="py-2 px-4 border-b border-gray-400">{{ patrolId }}</td> -->
+            <td class="py-2 px-4 border-b border-gray-400">{{ isClockedIn ? 'En cours' : (endTime ? 'Terminée' : '') }}</td>
+            <td class="py-2 px-4 border-b border-gray-400">{{ startTime }}</td>
+            <td class="py-2 px-4 border-b border-gray-400">{{ endTime }}</td>
+            <!-- <td class="py-2 px-4 border-b border-gray-400">{{ userId }}</td> -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -48,11 +74,16 @@ import api from '@/services/api';
 export default {
   setup() {
     const route = useRoute();
-    const clockIn = ref(false);
-    const startDateTime = ref(null);
+    const isClockedIn = ref(false); 
+    const startTime = ref(null); 
+    const endTime = ref(null); 
     const loading = ref(false);
     const userId = ref(null);
     const error = ref(null);
+    const apiResponse = ref(null); 
+
+    
+    const patrolId = ref(null); 
 
     const refresh = async () => {
       if (!userId.value) {
@@ -63,14 +94,17 @@ export default {
       error.value = null;
       try {
         const response = await api.getClocks(userId.value);
+        apiResponse.value = response.data; 
         console.log('API response:', response);
         if (response.data && response.data.length > 0) {
           const lastClock = response.data[response.data.length - 1];
-          clockIn.value = lastClock.status === 'false';
-          startDateTime.value = clockIn.value ? new Date(lastClock.time).toLocaleString() : null;
+          isClockedIn.value = lastClock.status === 'true'; 
+          startTime.value = isClockedIn.value ? new Date(lastClock.time).toLocaleString() : startTime.value; 
+          endTime.value = !isClockedIn.value ? new Date(lastClock.time).toLocaleString() : endTime.value; 
         } else {
-          clockIn.value = false;
-          startDateTime.value = null;
+          isClockedIn.value = false;
+          startTime.value = null;
+          endTime.value = null;
         }
         console.log('État rafraîchi');
       } catch (err) {
@@ -81,7 +115,7 @@ export default {
       }
     };
 
-    const clock = async () => {
+    const toggleClock = async () => {
       if (!userId.value) {
         error.value = "Aucun utilisateur sélectionné";
         return;
@@ -89,11 +123,22 @@ export default {
       loading.value = true;
       error.value = null;
       try {
-        const newStatus = !clockIn.value;
+        const newStatus = !isClockedIn.value;
         const response = await api.postClock(userId.value, new Date().toISOString(), newStatus);
+        apiResponse.value = response.data; 
+
+       
+        patrolId.value = response.data.data.id;
+        isClockedIn.value = newStatus;
+
+        if (newStatus) {
+          startTime.value = new Date().toLocaleString(); 
+          endTime.value = null; 
+        } else {
+          endTime.value = new Date().toLocaleString();
+        }
+
         console.log('API response:', response);
-        clockIn.value = newStatus;
-        startDateTime.value = newStatus ? new Date().toLocaleString() : null;
         console.log(newStatus ? 'Début du travail' : 'Arrêt du travail');
       } catch (err) {
         console.error('Erreur lors du changement d\'état:', err);
@@ -124,14 +169,18 @@ export default {
     });
 
     return {
-      clockIn,
-      startDateTime,
+      isClockedIn,
+      startTime,
+      endTime,
       loading,
       userId,
       error,
+      apiResponse, 
+      patrolId, 
       refresh,
-      clock
+      toggleClock
     };
   }
 };
 </script>
+

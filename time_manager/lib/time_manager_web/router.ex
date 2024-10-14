@@ -34,8 +34,10 @@ get "/workingtimes/:user_id", WorkingTimeController, :show_user_working_time
 
     # Clocking routes
     get "/clocks", ClockController, :index                            # GET all clocks
-    get "/clocks/:user_id", ClockController, :list_user_clocks        # URL: /api/clocks/:user_id (Lister les pointages d'un utilisateur)
+    # get "/clocks/:user_id", ClockController, :list_user_clocks        # URL: /api/clocks/:user_id (Lister les pointages d'un utilisateur)
     post "/clocks/:user_id", ClockController, :create                 # URL: /api/clocks/:user_id (Créer un pointage pour un utilisateur)
+
+    get "/clocks/:user_id", ClockController, :show # nouvelle route pour lister les pointages d'un utilisateur
   end
 
 
