@@ -1,20 +1,17 @@
 services:
   backend:
     build: 
-      context: ./time_manager
+      context: .
+      dockerfile: ./time_manager/Dockerfile
     container_name: time_manager_backend
     ports:
       - "4000:4000"
     environment:
       MIX_ENV: prod
+      PHX_SERVER: "true"
       DATABASE_URL: ecto://postgres:postgres@db/time_manager_dev
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASSWORD: postgres
       SECRET_KEY_BASE: "ycynbOktJ7zgIZrpJPGX2R9vLz9AcM2gKhxh6mjHPo8/wbIDU/Cd4A2ACvIXP7QI"
-    volumes:
-      - ./time_manager:/app
+      PHX_HOST: localhost
     depends_on:
       - db
     networks:

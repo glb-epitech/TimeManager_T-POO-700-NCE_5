@@ -14,14 +14,14 @@ RUN mix local.hex --force && \
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy the time_manager directory contents into the container
+COPY ./time_manager .
 
 # Install dependencies
-RUN mix deps.get
+RUN mix deps.get --only prod
 RUN mix deps.compile
 
-# Compile assets if using Phoenix
+# Compile assets
 RUN mix assets.deploy
 
 # Compile the application
@@ -40,8 +40,12 @@ WORKDIR /app
 # Copy the release from the builder stage
 COPY --from=builder /app/_build/prod/rel/time_manager ./
 
+# Set necessary environment variables
+ENV LANG=C.UTF-8
+ENV PHX_SERVER=true
+
 # Expose the Phoenix port
 EXPOSE 4000
 
-# Set the entrypoint to the Phoenix app
-CMD ["bin/time_manager", "start"]
+# Start the Phoenix app
+CMD ["/app/bin/time_manager", "start"]
