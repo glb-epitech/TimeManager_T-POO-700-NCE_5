@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -26,6 +27,13 @@ spec:
             secretKeyRef:
               name: postgres-secret
               key: postgres_default_password
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
         ports:
         - containerPort: 5432
 ---
@@ -33,6 +41,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: time-manager
 spec:
   type: ClusterIP
   ports:
@@ -44,6 +53,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elixir-backend
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -85,6 +95,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elixir-backend
+  namespace: time-manager
 spec:
   type: ClusterIP
   ports:
@@ -96,6 +107,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vuejs-frontend
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -124,6 +136,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: vuejs-frontend
+  namespace: time-manager
 spec:
   type: LoadBalancer
   ports:

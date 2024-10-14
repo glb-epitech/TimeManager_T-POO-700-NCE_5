@@ -1,7 +1,7 @@
 @echo off
 
 REM Use Minikube's Docker daemon
-& minikube -p minikube docker-env --shell powershell | Invoke-Expression
+FOR /F "tokens=*" %%i IN ('minikube docker-env --shell cmd') DO @%%i
 
 
 REM Paths to Dockerfiles
@@ -47,7 +47,7 @@ echo Waiting for Vue.js frontend to be ready...
 kubectl wait --for=condition=ready pod -l app=vuejs-frontend -n time-manager
 
 REM Open front service to external address/port
-minikube service vuejs-frontend
+minikube service vuejs-frontend -n time-manager
 
 REM Start Minikube tunnel
 @REM start /B minikube tunnel
