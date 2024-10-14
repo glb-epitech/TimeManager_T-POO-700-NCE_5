@@ -108,6 +108,11 @@
           class="px-4 py-3 text-bat-silver"
         >
           {{ user.id }} - {{ user.username }} - {{ user.email }}
+
+          <!-- Update Button -->
+          <button @click="selectUserForUpdate(user)" class="ml-4 bat-button bg-bat-blue text-sm">Edit</button>
+          <!-- Delete Button -->
+          <button @click="deleteUserById(user.id)" class="ml-2 bat-button bg-red-600 text-sm">X</button>
         </li>
       </ul>
     </div>
@@ -135,7 +140,7 @@ export default {
     async createUser() {
       try {
         // Clear the list of users
-        this.users = []
+        this.users = [];
 
         const response = await axios.post(`http://localhost:4000/api/users`, {
           user: {
@@ -143,14 +148,23 @@ export default {
             email: this.userEmail,
           },
         });
+
         this.userData = response.data;
         alert("User created successfully");
       } catch (error) {
-        this.handleError(error, "creating user");
+        if (error.response && error.response.status === 500) {
+          // Handle conflict error (user already exists)
+          alert("User already exists in the database.");
+        } else {
+          this.handleError(error, "creating user");
+        }
       }
     },
     async getUser() {
       try {
+        // Clear the list of users
+        this.users = [];
+
         if (this.userName && this.userEmail) {
           // Fetch user data by username and email
           const response = await axios.get(
@@ -163,12 +177,12 @@ export default {
             }
           );
           this.userData = response.data;
-          
+
           // Add query params to the URL for userId
           this.$router.push({
             path: "/",
             query: {
-                id: this.userData.data.id
+              id: this.userData.data.id,
             },
           });
         } else if (this.userId) {
@@ -202,6 +216,7 @@ export default {
         this.users = response.data;
         console.log(this.users);
         alert("Get all users successful");
+        this.resetUrl();
       } catch (error) {
         this.handleError(error, "getting all users");
       }
@@ -228,9 +243,26 @@ export default {
         await axios.delete(`http://localhost:4000/api/users/${this.userId}`);
         this.userData = null; // Clear the data after deletion
         alert("User deleted successfully");
+        this.resetUrl();
       } catch (error) {
         this.handleError(error, "deleting user");
       }
+    },
+    async deleteUserById(id) {
+      try {
+        await axios.delete(`http://localhost:4000/api/users/${id}`);
+        this.getAllUsers(); // Refresh the user list after deletion
+        alert("User deleted successfully");
+      } catch (error) {
+        this.handleError(error, "deleting user");
+      }
+    },
+    resetUrl() {
+      // Create a new route object, excluding the 'id' query parameter
+      this.$router.replace({
+        path: this.$route.path, // Keep the current path
+        query: {} // Set the query object to an empty object to remove all query parameters
+      });
     },
     handleError(error, action) {
       if (error.response) {
@@ -248,11 +280,9 @@ export default {
     },
   },
 
-
-//   mounted() {
-//   const userIdFromUrl = this.$route.query.id;
-//   console.log('userIdFromUrl',userIdFromUrl)
-// },
-
+  //   mounted() {
+  //   const userIdFromUrl = this.$route.query.id;
+  //   console.log('userIdFromUrl',userIdFromUrl)
+  // },
 };
 </script>
