@@ -91,7 +91,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
@@ -104,7 +103,8 @@ jobs:
     - name: Build and push backend Docker image
       uses: docker/build-push-action@v4
       with:
-        context: ./time_manager
+        context: .
+        file: ./time_manager/Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-backend:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-backend:latest
 
@@ -115,12 +115,21 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-frontend:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-frontend:latest
 
-    - name: Build and push database Docker image
+    # Supprimez cette étape si vous n'avez pas de Dockerfile personnalisé pour la base de données
+    # - name: Build and push database Docker image
+    #   uses: docker/build-push-action@v4
+    #   with:
+    #     context: ./bdd
+    #     push: true
+    #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:latest
+
+    - name: Build and push pgAdmin Docker image
       uses: docker/build-push-action@v4
       with:
-        context: ./bdd
+        context: .
+        file: ./pgadmin/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-pgadmin:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-pgadmin:latest
 
   deploy:
     needs: docker
@@ -128,10 +137,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    #- name: Configure kubectl
-    #  uses: azure/k8s-set-context@v1
-    #  with:
-    #    kubeconfig: ${{ secrets.KUBE_CONFIG }}
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v1
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
     
     - name: Update Kubernetes resources
       env:
@@ -141,6 +150,7 @@ jobs:
         sed -i 's|image: .*backend:.*|image: '"${DOCKER_USERNAME}"'/timemanager-backend:'"${DOCKER_IMAGE_TAG}"'|' k8s/deployment.yaml
         sed -i 's|image: .*frontend:.*|image: '"${DOCKER_USERNAME}"'/timemanager-frontend:'"${DOCKER_IMAGE_TAG}"'|' k8s/deployment.yaml
         sed -i 's|image: .*db:.*|image: '"${DOCKER_USERNAME}"'/timemanager-db:'"${DOCKER_IMAGE_TAG}"'|' k8s/deployment.yaml
+        sed -i 's|image: .*pgadmin:.*|image: '"${DOCKER_USERNAME}"'/timemanager-pgadmin:'"${DOCKER_IMAGE_TAG}"'|' k8s/deployment.yaml
     
     - name: Deploy to Kubernetes
       run: |
@@ -148,15 +158,17 @@ jobs:
         kubectl apply -f k8s/service.yaml
       env:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
 
     - name: Run database migrations
       run: |
-        kubectl exec -it deployment/elixir-backend -- mix ecto.migrate
+        kubectl exec -it deployment/time-manager-backend -- /app/bin/time_manager eval "TimeManager.Release.migrate()"
       env:
         MIX_ENV: prod
 
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/elixir-backend
-        kubectl rollout status deployment/vuejs-frontend
+        kubectl rollout status deployment/time-manager-backend
+        kubectl rollout status deployment/time-manager-frontend
         kubectl rollout status deployment/postgres-db
+        kubectl rollout status deployment/pgadmin
