@@ -58,17 +58,17 @@
       <button @click="createUser" class="bat-button bg-bat-blue">
         Enregistrer le Citoyen
       </button>
+      <button @click="updateUser" class="bat-button bg-bat-blue">
+        Mettre à Jour le Citoyen
+      </button>
+      <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
+        Localiser le Citoyen
+      </button>
       <button
         @click="getAllUsers"
         class="bat-button bg-bat-yellow text-bat-black"
       >
         Voir Tous les Citoyens
-      </button>
-      <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
-        Localiser le Citoyen
-      </button>
-      <button @click="updateUser" class="bat-button bg-bat-blue">
-        Mettre à Jour les Dossiers
       </button>
       <button @click="deleteUser" class="bat-button bg-red-600 col-span-2">
         Effacer les Dossiers
@@ -107,12 +107,36 @@
           :key="user.id"
           class="px-4 py-3 text-bat-silver"
         >
-          {{ user.id }} - {{ user.username }} - {{ user.email }}
+          <!-- User List Item -->
+          <div
+            class="flex items-center justify-between bg-bat-black text-bat-silver py-2 px-4 rounded-md"
+          >
+            <!-- User Information (ensure this doesn't expand) -->
+            <div class="flex-grow">
+              {{ user.id }} - {{ user.username }} - {{ user.email }}
+            </div>
 
-          <!-- Update Button -->
-          <button @click="selectUserForUpdate(user)" class="ml-4 bat-button bg-bat-blue text-sm">Edit</button>
-          <!-- Delete Button -->
-          <button @click="deleteUserById(user.id)" class="ml-2 bat-button bg-red-600 text-sm">X</button>
+            <!-- Buttons Container (fixed width) -->
+            <div class="flex-shrink-0 flex items-center">
+              <!-- Update Button -->
+              <button @click="selectUserForUpdate(user)">
+                <img
+                  src="@/assets/icons/edit-icon.png"
+                  alt="Edit"
+                  class="w-4 h-4 ml-4 mr-2"
+                />
+              </button>
+
+              <!-- Delete Button -->
+              <button @click="deleteUserById(user.id)">
+                <img
+                  src="@/assets/icons/delete-icon.png"
+                  alt="Delete"
+                  class="w-4 h-4 ml-2"
+                />
+              </button>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -234,6 +258,9 @@ export default {
         );
         this.userData = response.data;
         alert("User updated successfully");
+
+        // Clear the list of users
+        this.users = [];
       } catch (error) {
         this.handleError(error, "updating user");
       }
@@ -261,7 +288,20 @@ export default {
       // Create a new route object, excluding the 'id' query parameter
       this.$router.replace({
         path: this.$route.path, // Keep the current path
-        query: {} // Set the query object to an empty object to remove all query parameters
+        query: {}, // Set the query object to an empty object to remove all query parameters
+      });
+    },
+    selectUserForUpdate(user) {
+      // Prefill the form with selected user's data for update
+      this.userId = user.id;
+      this.userName = user.username;
+      this.userEmail = user.email;
+      // Add query params to the URL for userId
+      this.$router.push({
+        path: "/",
+        query: {
+          id: this.userId,
+        },
       });
     },
     handleError(error, action) {
