@@ -1,0 +1,26 @@
+# Utiliser une image de base Node.js
+FROM node:lts-alpine
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers package.json et package-lock.json
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm install
+
+# Copier le reste des fichiers de l'application
+COPY . .
+
+# Construire l'application pour la production
+RUN npm run build
+
+# Installer un serveur HTTP simple pour servir le contenu statique
+RUN npm install -g http-server
+
+# Exposer le port 8080
+EXPOSE 8080
+
+# Commande pour démarrer l'application
+CMD ["http-server", "dist"]
