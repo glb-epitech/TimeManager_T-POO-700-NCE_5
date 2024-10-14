@@ -23,10 +23,38 @@ defmodule TimeManagerWeb.ClockController do
     end
   end
 
+  # def show(conn, %{"user_id" => user_id}) do
+  #   clocks = TimeTracking.list_clocks_by_user_id(user_id)
+  #   conn
+  #   |> put_view(TimeManagerWeb.ClockJSON)
+  #   |> render("index.json", clocks: clocks)
+  # end
+
+
   def show(conn, %{"user_id" => user_id}) do
-    clocks = TimeTracking.list_clocks_by_user_id(user_id)
+    clocks = TimeTracking.list_clocks_for_user(user_id)
+
+    if clocks == [] do
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: "Aucune horloge trouvée pour l'utilisateur avec l'ID #{user_id}."})
+    else
+      conn
+      |> put_view(TimeManagerWeb.ClockJSON)
+      |> render("index.json", clocks: clocks)
+    end
+  end
+
+
+
+
+
+
+  def index(conn, _params) do
+    clocks = TimeTracking.list_clocks()
     conn
     |> put_view(TimeManagerWeb.ClockJSON)
     |> render("index.json", clocks: clocks)
   end
+
 end
