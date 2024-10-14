@@ -12,10 +12,12 @@ WORKDIR /app
 
 # Copy the mix.exs and mix.lock files to install dependencies
 COPY mix.exs mix.lock ./
+COPY config config
+
 
 # Install Elixir dependencies
-RUN mix do local.hex --force, local.rebar --force
 RUN mix deps.get --only prod
+RUN mix deps.compile
 
 # Copy the rest of the application code
 COPY . .
