@@ -1,28 +1,33 @@
-# Utiliser une image de base Elixir
-FROM elixir:latest
+# Base Elixir image
+FROM elixir:1.14-alpine
 
-# Installer Hex et Rebar
-RUN mix local.hex --force && mix local.rebar --force
+# Install build dependencies
+RUN apk add --no-cache build-base git postgresql-client
 
-# Définir le répertoire de travail
+# Set environment variables
+ENV MIX_ENV=prod
+
+# Set the working directory to /app
 WORKDIR /app
 
-# Copier les fichiers mix.exs et mix.lock
+# Copy the mix.exs and mix.lock files to install dependencies
 COPY mix.exs mix.lock ./
 
-# Copier le reste des fichiers de l'application
+# Install Elixir dependencies
+RUN mix do local.hex --force, local.rebar --force
+RUN mix deps.get --only prod
+
+# Copy the rest of the application code
 COPY . .
 
-# Installer les dépendances
-RUN mix deps.get
-
-# RUN mix ecto.create
-
-# Compiler l'application
+# Compile the application for production
 RUN mix compile
 
-# Exposer le port 4000
+# Copy the init script
+COPY init.sh ./init.sh
+
+# Expose the Phoenix port
 EXPOSE 4000
 
-# Commande pour démarrer l'application
-CMD ["mix", "phx.server"]
+# Command to run the init script
+CMD ["sh", "./init.sh"]
