@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -16,10 +17,25 @@ spec:
       - name: postgres
         image: postgres:latest
         env:
+        - name: POSTGRES_DB
+          value: "postgres"
         - name: POSTGRES_USER
-          value: "postgres"
+          valueFrom: 
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres_default_username
         - name: POSTGRES_PASSWORD
-          value: "postgres"
+          valueFrom: 
+            secretKeyRef:
+              name: postgres-secret
+              key: postgres_default_password
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
         ports:
         - containerPort: 5432
 ---
@@ -27,6 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: time-manager
 spec:
   type: ClusterIP
   ports:
@@ -38,6 +55,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elixir-backend
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -51,11 +69,33 @@ spec:
       containers:
       - name: elixir-backend
         image: elixir-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 4000
         env:
-        - name: DATABASE_URL
-          value: "postgresql://postgres:postgres@postgres:5432/postgres"
+          - name: DB_HOST
+            value: "postgres"
+          - name: DB_PORT
+            value: "5432"
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_default_username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_default_password
+          - name: DATABASE_URL
+            value: "ecto://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/postgres"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
       initContainers:
       - name: wait-for-postgres
         image: busybox
@@ -65,6 +105,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elixir-backend
+  namespace: time-manager
 spec:
   type: ClusterIP
   ports:
@@ -76,6 +117,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vuejs-frontend
+  namespace: time-manager
 spec:
   replicas: 1
   selector:
@@ -89,17 +131,27 @@ spec:
       containers:
       - name: vuejs-frontend
         image: vuejs-app:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: vuejs-frontend
+  namespace: time-manager
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8080
+    nodePort: 30000
   selector:
     app: vuejs-frontend

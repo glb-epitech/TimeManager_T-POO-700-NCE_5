@@ -58,17 +58,17 @@
       <button @click="createUser" class="bat-button bg-bat-blue">
         Enregistrer le Citoyen
       </button>
+      <button @click="updateUser" class="bat-button bg-bat-blue">
+        Mettre à Jour le Citoyen
+      </button>
+      <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
+        Localiser le Citoyen
+      </button>
       <button
         @click="getAllUsers"
         class="bat-button bg-bat-yellow text-bat-black"
       >
         Voir Tous les Citoyens
-      </button>
-      <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
-        Localiser le Citoyen
-      </button>
-      <button @click="updateUser" class="bat-button bg-bat-blue">
-        Mettre à Jour les Dossiers
       </button>
       <button @click="deleteUser" class="bat-button bg-red-600 col-span-2">
         Effacer les Dossiers
@@ -107,7 +107,36 @@
           :key="user.id"
           class="px-4 py-3 text-bat-silver"
         >
-          {{ user.id }} - {{ user.username }} - {{ user.email }}
+          <!-- User List Item -->
+          <div
+            class="flex items-center justify-between bg-bat-black text-bat-silver py-2 px-4 rounded-md"
+          >
+            <!-- User Information (ensure this doesn't expand) -->
+            <div class="flex-grow">
+              {{ user.id }} - {{ user.username }} - {{ user.email }}
+            </div>
+
+            <!-- Buttons Container (fixed width) -->
+            <div class="flex-shrink-0 flex items-center">
+              <!-- Update Button -->
+              <button @click="selectUserForUpdate(user)">
+                <img
+                  src="@/assets/icons/edit-icon.png"
+                  alt="Edit"
+                  class="w-4 h-4 ml-4 mr-2"
+                />
+              </button>
+
+              <!-- Delete Button -->
+              <button @click="deleteUserById(user.id)">
+                <img
+                  src="@/assets/icons/delete-icon.png"
+                  alt="Delete"
+                  class="w-4 h-4 ml-2"
+                />
+              </button>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
@@ -135,7 +164,7 @@ export default {
     async createUser() {
       try {
         // Clear the list of users
-        this.users = []
+        this.users = [];
 
         const response = await axios.post(`http://localhost:4000/api/users`, {
           user: {
@@ -143,14 +172,23 @@ export default {
             email: this.userEmail,
           },
         });
+
         this.userData = response.data;
         alert("User created successfully");
       } catch (error) {
-        this.handleError(error, "creating user");
+        if (error.response && error.response.status === 500) {
+          // Handle conflict error (user already exists)
+          alert("User already exists in the database.");
+        } else {
+          this.handleError(error, "creating user");
+        }
       }
     },
     async getUser() {
       try {
+        // Clear the list of users
+        this.users = [];
+
         if (this.userName && this.userEmail) {
           // Fetch user data by username and email
           const response = await axios.get(
@@ -163,12 +201,12 @@ export default {
             }
           );
           this.userData = response.data;
-          
+
           // Add query params to the URL for userId
           this.$router.push({
             path: "/",
             query: {
-                id: this.userData.data.id
+              id: this.userData.data.id,
             },
           });
         } else if (this.userId) {
@@ -202,6 +240,7 @@ export default {
         this.users = response.data;
         console.log(this.users);
         alert("Get all users successful");
+        this.resetUrl();
       } catch (error) {
         this.handleError(error, "getting all users");
       }
@@ -219,6 +258,9 @@ export default {
         );
         this.userData = response.data;
         alert("User updated successfully");
+
+        // Clear the list of users
+        this.users = [];
       } catch (error) {
         this.handleError(error, "updating user");
       }
@@ -228,9 +270,39 @@ export default {
         await axios.delete(`http://localhost:4000/api/users/${this.userId}`);
         this.userData = null; // Clear the data after deletion
         alert("User deleted successfully");
+        this.resetUrl();
       } catch (error) {
         this.handleError(error, "deleting user");
       }
+    },
+    async deleteUserById(id) {
+      try {
+        await axios.delete(`http://localhost:4000/api/users/${id}`);
+        this.getAllUsers(); // Refresh the user list after deletion
+        alert("User deleted successfully");
+      } catch (error) {
+        this.handleError(error, "deleting user");
+      }
+    },
+    resetUrl() {
+      // Create a new route object, excluding the 'id' query parameter
+      this.$router.replace({
+        path: this.$route.path, // Keep the current path
+        query: {}, // Set the query object to an empty object to remove all query parameters
+      });
+    },
+    selectUserForUpdate(user) {
+      // Prefill the form with selected user's data for update
+      this.userId = user.id;
+      this.userName = user.username;
+      this.userEmail = user.email;
+      // Add query params to the URL for userId
+      this.$router.push({
+        path: "/",
+        query: {
+          id: this.userId,
+        },
+      });
     },
     handleError(error, action) {
       if (error.response) {
@@ -248,11 +320,9 @@ export default {
     },
   },
 
-
-//   mounted() {
-//   const userIdFromUrl = this.$route.query.id;
-//   console.log('userIdFromUrl',userIdFromUrl)
-// },
-
+  //   mounted() {
+  //   const userIdFromUrl = this.$route.query.id;
+  //   console.log('userIdFromUrl',userIdFromUrl)
+  // },
 };
 </script>
