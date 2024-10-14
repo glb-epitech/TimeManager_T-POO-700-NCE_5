@@ -118,7 +118,7 @@ jobs:
     - name: Build and push database Docker image
       uses: docker/build-push-action@v4
       with:
-        context: ./database
+        context: ./bdd
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/timemanager-db:latest
 

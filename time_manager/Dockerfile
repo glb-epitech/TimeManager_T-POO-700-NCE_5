@@ -1,5 +1,5 @@
-# Base Elixir image
-FROM elixir:1.14-alpine
+# Build stage
+FROM elixir:1.14-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache build-base git postgresql-client
@@ -7,29 +7,41 @@ RUN apk add --no-cache build-base git postgresql-client
 # Set environment variables
 ENV MIX_ENV=prod
 
+# Install hex and rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the mix.exs and mix.lock files to install dependencies
-COPY mix.exs mix.lock ./
-COPY config config
-
-
-# Install Elixir dependencies
-RUN mix deps.get --only prod
-RUN mix deps.compile
-
-# Copy the rest of the application code
+# Copy the entire project
 COPY . .
 
-# Compile the application for production
+# Install dependencies
+RUN mix deps.get
+RUN mix deps.compile
+
+# Compile assets if using Phoenix
+RUN mix assets.deploy
+
+# Compile the application
 RUN mix compile
 
-# Copy the init script
-COPY init.sh ./init.sh
+# Build release
+RUN mix release
+
+# Final stage
+FROM alpine:3.14
+
+RUN apk add --no-cache openssl ncurses-libs
+
+WORKDIR /app
+
+# Copy the release from the builder stage
+COPY --from=builder /app/_build/prod/rel/time_manager ./
 
 # Expose the Phoenix port
 EXPOSE 4000
 
-# Command to run the init script
-CMD ["sh", "./init.sh"]
+# Set the entrypoint to the Phoenix app
+CMD ["bin/time_manager", "start"]
