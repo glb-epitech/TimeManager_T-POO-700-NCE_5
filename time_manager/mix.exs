@@ -60,7 +60,8 @@ defmodule TimeManager.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:pbkdf2_elixir, "~> 1.4"}
     ]
   end
 
