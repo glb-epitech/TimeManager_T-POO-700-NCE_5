@@ -3,6 +3,8 @@ import Home from '@/views/Home.vue';
 import ClockManager from '@/components/ClockManager.vue';
 import User from '@/components/User.vue';
 import WorkingTimes from '@/components/WorkingTimes.vue';
+import Login from '@/components/Login.vue';
+import Signup from '@/components/Signup.vue';
 
 const routes = [
   {
@@ -19,6 +21,16 @@ const routes = [
     path: '/user',
     name: 'User',
     component: User
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: Signup
   },
   {
     path: '/working-times/:userId',

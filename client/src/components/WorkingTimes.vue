@@ -172,7 +172,7 @@ export default {
         const response = await axios.delete(
           `http://localhost:4000/api/workingtime/${id}`
         );
-        // console.log("Working time deleted:", response.data);
+        console.log("Working time deleted:", response.data);
         this.workingTimes = this.workingTimes.filter(
           (workingTime) => workingTime.id !== id
         );
@@ -213,7 +213,7 @@ export default {
           data
         );
 
-        // console.log("Working time updated:", response.data);
+        console.log("Working time updated:", response.data);
 
         const index = this.workingTimes.findIndex(workingTime => workingTime.id === this.editForm.id);
         if (index !== -1) {
