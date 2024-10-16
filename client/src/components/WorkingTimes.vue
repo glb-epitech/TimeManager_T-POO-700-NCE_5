@@ -1,8 +1,6 @@
 <template>
   <div class="bg-bat-gray rounded-lg shadow-bat p-6">
-    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">
-      Journal de Patrouille de Gotham
-    </h2>
+    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Journal de Patrouille de Gotham</h2>
 
     <!-- Loading indicator -->
     <div v-if="loading" class="text-center py-4">
@@ -16,80 +14,71 @@
       <p>{{ errorMessage }}</p>
     </div>
 
-    <div v-else-if="workingTimes.length > 0" class="bg-bat-black p-6 rounded-lg shadow-inner">
+    <div v-else-if="workingTimes.length > 0" class="space-y-4">
       <div v-for="workingTime in workingTimes" :key="workingTime.id"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver">
-        <div>
-          <p class="text-bat-yellow font-semibold">ID de Mission :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
+        class="bg-bat-black p-4 rounded-lg shadow-inner">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <p class="text-bat-yellow font-semibold">ID de Mission :</p>
+            <p class="text-bat-silver">{{ workingTime.id }}</p>
+          </div>
+          <div>
+            <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
+            <p class="text-bat-silver">{{ workingTime.user_id }}</p>
+          </div>
+          <div>
+            <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
+            <p class="text-bat-blue">{{ formatTimeForDisplay(workingTime.start) }}</p>
+          </div>
+          <div>
+            <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
+            <p class="text-bat-blue">{{ formatTimeForDisplay(workingTime.end) }}</p>
+          </div>
         </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
-        </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
-          <p class="text-bat-blue text-xl">
-            {{ formatTimeForDisplay(workingTime.start) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
-          <p class="text-bat-blue text-xl">
-            {{ formatTimeForDisplay(workingTime.end) }}
-          </p>
-        </div>
-        <div class="flex gap-2 mt-2 w-full">
-          <button @click="editWorkingTime(workingTime)"
-            class="bg-blue-500 text-white py-0.5 px-3 rounded hover:bg-blue-600 w-full text-sm">
+        <div class="flex gap-2 mt-2">
+          <button @click="editWorkingTime(workingTime)" class="bat-button bat-button-blue flex-1">
             Modifier le Journal
           </button>
-        </div>
-        <div class="flex gap-2 mt-2 w-full">
-          <button @click="deleteWorkingTime(workingTime.id)"
-            class="bg-red-500 text-white py-0.5 px-3 rounded hover:bg-red-600 w-full text-sm">
+          <button @click="deleteWorkingTime(workingTime.id)" class="bat-button bat-button-red flex-1">
             Supprimer le Journal
           </button>
         </div>
-        <button @click="showCreateForm"
-          class="mb-4 bg-bat-yellow text-bat-black py-2 px-4 rounded hover:bg-opacity-90 transition duration-300 font-bold">
-          Créer un nouveau Journal
-        </button>
       </div>
     </div>
 
-
-    <div v-if="createMode" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
-  <h3 class="text-lg font-semibold mb-4 text-bat-yellow">
-    Créer un Nouveau Journal de Patrouille
-  </h3>
-  <form @submit.prevent="createWorkingTime" class="space-y-4">
-    <div>
-      <label for="newStartTime" class="block text-sm font-medium text-bat-silver mb-1">Début de Patrouille :</label>
-      <input type="datetime-local" id="newStartTime" v-model="newWorkingTime.start" required
-        class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
-    </div>
-    <div>
-      <label for="newEndTime" class="block text-sm font-medium text-bat-silver mb-1">Fin de Patrouille :</label>
-      <input type="datetime-local" id="newEndTime" v-model="newWorkingTime.end" required
-        class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
-    </div>
-    <div class="flex justify-end space-x-4">
-      <button type="button" @click="createMode = false"
-        class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
-        Annuler
-      </button>
-      <button type="submit"
-        class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
-        Créer le Journal
-      </button>
-    </div>
-  </form>
-</div>
-
-
     <div v-else class="text-center py-4 text-bat-silver">
       Aucun journal de patrouille trouvé. La nuit est calme.
+    </div>
+
+    <button @click="showCreateForm" class="bat-button bat-button-yellow w-full mt-4">
+      Créer un nouveau Journal
+    </button>
+
+    <!-- Create form -->
+    <div v-if="createMode" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
+      <h3 class="text-lg font-semibold mb-4 text-bat-yellow">
+        Créer un Nouveau Journal de Patrouille
+      </h3>
+      <form @submit.prevent="createWorkingTime" class="space-y-4">
+        <div>
+          <label for="newStartTime" class="block text-sm font-medium text-bat-silver mb-1">Début de Patrouille :</label>
+          <input type="datetime-local" id="newStartTime" v-model="newWorkingTime.start" required
+            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
+        </div>
+        <div>
+          <label for="newEndTime" class="block text-sm font-medium text-bat-silver mb-1">Fin de Patrouille :</label>
+          <input type="datetime-local" id="newEndTime" v-model="newWorkingTime.end" required
+            class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
+        </div>
+        <div class="flex justify-end space-x-4">
+          <button type="button" @click="createMode = false" class="bat-button bat-button-gray">
+            Annuler
+          </button>
+          <button type="submit" class="bat-button bat-button-yellow">
+            Créer le Journal
+          </button>
+        </div>
+      </form>
     </div>
 
     <!-- Edit form -->
@@ -99,8 +88,7 @@
       </h3>
       <form @submit.prevent="updateWorkingTime" class="space-y-4">
         <div>
-          <label for="editStartTime" class="block text-sm font-medium text-bat-silver mb-1">Début de Patrouille
-            :</label>
+          <label for="editStartTime" class="block text-sm font-medium text-bat-silver mb-1">Début de Patrouille :</label>
           <input type="datetime-local" id="editStartTime" v-model="editForm.start" required
             class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
         </div>
@@ -110,12 +98,10 @@
             class="w-full px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
         </div>
         <div class="flex justify-end space-x-4">
-          <button type="button" @click="editMode = false"
-            class="px-4 py-2 bg-bat-gray text-bat-silver rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
+          <button type="button" @click="editMode = false" class="bat-button bat-button-gray">
             Annuler
           </button>
-          <button type="submit"
-            class="px-4 py-2 bg-bat-yellow text-bat-black rounded-full shadow-bat hover:bg-opacity-90 transition duration-300 font-bold">
+          <button type="submit" class="bat-button bat-button-yellow">
             Mettre à Jour le Journal
           </button>
         </div>

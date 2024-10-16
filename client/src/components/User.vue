@@ -55,22 +55,19 @@
 
     <!-- Boutons d'action -->
     <div class="grid grid-cols-2 gap-4 mb-6">
-      <button @click="createUser" class="bat-button bg-bat-blue">
+      <button @click="createUser" class="bat-button bat-button-blue">
         Enregistrer le Citoyen
       </button>
-      <button @click="updateUser" class="bat-button bg-bat-blue">
+      <button @click="updateUser" class="bat-button bat-button-blue">
         Mettre à Jour le Citoyen
       </button>
-      <button @click="getUser" class="bat-button bg-bat-silver text-bat-black">
+      <button @click="getUser" class="bat-button bat-button-gray">
         Localiser le Citoyen
       </button>
-      <button
-        @click="getAllUsers"
-        class="bat-button bg-bat-yellow text-bat-black"
-      >
+      <button @click="getAllUsers" class="bat-button bat-button-yellow">
         Voir Tous les Citoyens
       </button>
-      <button @click="deleteUser" class="bat-button bg-red-600 col-span-2">
+      <button @click="deleteUser" class="bat-button bat-button-red col-span-2">
         Effacer les Dossiers
       </button>
     </div>

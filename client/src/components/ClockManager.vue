@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-bat-gray rounded-lg shadow-bat p-6">
-    <h2 class="text-2xl font-bold mb-6 text-bat-yellow">Gotham Time Tracker</h2>
+  <div class="bg-bat-gray rounded-lg shadow-bat p-6" role="region" aria-labelledby="time-tracker-title">
+    <h2 id="time-tracker-title" class="text-2xl font-bold mb-6 text-bat-yellow">Gotham Time Tracker</h2>
     
-    <div class="mb-6">
+    <div class="mb-6" aria-live="polite">
       <p v-if="isClockedIn" class="text-bat-blue font-semibold">
         Vigilance active depuis : <span class="text-bat-yellow">{{ startTime }}</span>
       </p>
@@ -14,9 +14,10 @@
     <button
       @click="toggleClock"
       :disabled="loading"
+      :aria-busy="loading"
       :class="[
-        isClockedIn ? 'bg-bat-blue' : 'bg-bat-yellow',
-        'text-bat-black font-bold py-3 px-6 rounded-full shadow-bat hover:opacity-90 transition duration-300 w-full mb-4',
+        'bat-button w-full mb-4',
+        isClockedIn ? 'bat-button-blue' : 'bat-button-yellow',
         loading ? 'opacity-50 cursor-not-allowed' : ''
       ]"
     >
@@ -26,42 +27,49 @@
     <button
       @click="refresh"
       :disabled="loading"
-      :class="loading ? 'opacity-50 cursor-not-allowed' : ''"
-      class="bg-bat-gray border border-bat-yellow text-bat-yellow font-bold py-3 px-6 rounded-full shadow-bat hover:bg-bat-yellow hover:text-bat-black transition duration-300 w-full"
+      :aria-busy="loading"
+      :class="['bat-button bat-button-gray w-full', loading ? 'opacity-50 cursor-not-allowed' : '']"
     >
       Actualiser le statut
     </button>
 
-    <div v-if="loading" class="mt-4 text-center">
-      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow"></div>
+    <div v-if="loading" class="mt-4 text-center" aria-live="polite">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-bat-yellow" role="status">
+        <span class="sr-only">Chargement en cours...</span>
+      </div>
     </div>
 
-    <div v-if="error" class="mt-4 text-red-500">
+    <div v-if="error" class="mt-4 text-red-500" role="alert">
       {{ error }}
     </div>
 
     <div v-if="apiResponse" class="mt-4">
-      <h3 class="text-xl font-bold mb-2">Détails de la réponse API :</h3>
-      <table class="min-w-full bg-gray-200 border border-gray-400 rounded-lg overflow-hidden">
-        <thead>
-          <tr class="bg-bat-yellow text-bat-black">
-            <!-- <th class="py-2 px-4 border-b border-gray-400">ID de la patrouille</th> -->
-            <th class="py-2 px-4 border-b border-gray-400">Statut</th>
-            <th class="py-2 px-4 border-b border-gray-400">Heure de début</th>
-            <th class="py-2 px-4 border-b border-gray-400">Heure de fin</th>
-            <!-- <th class="py-2 px-4 border-b border-gray-400">ID de l'utilisateur</th> -->
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <!-- <td class="py-2 px-4 border-b border-gray-400">{{ patrolId }}</td> -->
-            <td class="py-2 px-4 border-b border-gray-400">{{ isClockedIn ? 'En cours' : (endTime ? 'Terminée' : '') }}</td>
-            <td class="py-2 px-4 border-b border-gray-400">{{ startTime }}</td>
-            <td class="py-2 px-4 border-b border-gray-400">{{ endTime }}</td>
-            <!-- <td class="py-2 px-4 border-b border-gray-400">{{ userId }}</td> -->
-          </tr>
-        </tbody>
-      </table>
+      <h3 id="api-response-title" class="text-xl font-bold mb-2 text-bat-yellow">Détails de la réponse API :</h3>
+      <div class="overflow-x-auto">
+        <table aria-labelledby="api-response-title" class="min-w-full bg-bat-black border border-bat-gray rounded-lg overflow-hidden">
+          <caption class="sr-only">Détails de la dernière patrouille</caption>
+          <thead>
+            <tr class="bg-bat-yellow text-bat-black">
+              <th scope="col" class="py-2 px-4 border-b border-bat-gray">Statut</th>
+              <th scope="col" class="py-2 px-4 border-b border-bat-gray">Heure de début</th>
+              <th scope="col" class="py-2 px-4 border-b border-bat-gray">Heure de fin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-2 px-4 border-b border-bat-gray">
+                {{ isClockedIn ? 'En cours' : (endTime ? 'Terminée' : 'Non commencée') }}
+              </td>
+              <td class="py-2 px-4 border-b border-bat-gray">
+                {{ startTime || 'Non définie' }}
+              </td>
+              <td class="py-2 px-4 border-b border-bat-gray">
+                {{ endTime || 'Non définie' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
