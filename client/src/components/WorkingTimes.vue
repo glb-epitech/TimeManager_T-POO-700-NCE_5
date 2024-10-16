@@ -17,50 +17,51 @@
     </div>
 
     <div v-else-if="workingTimes.length > 0" class="bg-bat-black p-6 rounded-lg shadow-inner">
-      <div v-for="workingTime in workingTimes" :key="workingTime.id"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver">
-        <div>
-          <p class="text-bat-yellow font-semibold">ID de Mission :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
-        </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
-          <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
-        </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
-          <p class="text-bat-blue text-xl">
-            {{ formatTimeForDisplay(workingTime.start) }}
-          </p>
-        </div>
-        <div>
-          <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
-          <p class="text-bat-blue text-xl">
-            {{ formatTimeForDisplay(workingTime.end) }}
-          </p>
-        </div>
-        <div class="flex gap-2 mt-2 w-full">
-          <button @click="editWorkingTime(workingTime)"
-            class="bg-blue-500 text-white py-0.5 px-3 rounded hover:bg-blue-600 w-full text-sm">
-            Modifier le Journal
-          </button>
-        </div>
-        <div class="flex gap-2 mt-2 w-full">
-          <button @click="deleteWorkingTime(workingTime.id)"
-            class="bg-red-500 text-white py-0.5 px-3 rounded hover:bg-red-600 w-full text-sm">
-            Supprimer le Journal
-          </button>
-        </div>
-        <button @click="showCreateForm"
-          class="mb-4 bg-bat-yellow text-bat-black py-2 px-4 rounded hover:bg-opacity-90 transition duration-300 font-bold">
-          Créer un nouveau Journal
-        </button>
-      </div>
+  <div v-for="workingTime in workingTimes" :key="workingTime.id"
+    class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 border-b border-bat-silver">
+    <div>
+      <p class="text-bat-yellow font-semibold">ID de Mission :</p>
+      <p class="text-bat-silver text-xl">{{ workingTime.id }}</p>
     </div>
+    <div>
+      <p class="text-bat-yellow font-semibold">ID du Vigilant :</p>
+      <p class="text-bat-silver text-xl">{{ workingTime.user_id }}</p>
+    </div>
+    <div>
+      <p class="text-bat-yellow font-semibold">Début de Patrouille :</p>
+      <p class="text-bat-blue text-xl">
+        {{ formatTimeForDisplay(workingTime.start) }}
+      </p>
+    </div>
+    <div>
+      <p class="text-bat-yellow font-semibold">Fin de Patrouille :</p>
+      <p class="text-bat-blue text-xl">
+        {{ formatTimeForDisplay(workingTime.end) }}
+      </p>
+    </div>
+    <div class="flex gap-2 mt-2 w-full">
+      <button @click="editWorkingTime(workingTime)"
+        class="bg-blue-500 text-white py-0.5 px-3 rounded hover:bg-blue-600 w-full text-sm">
+        Modifier le Journal
+      </button>
+    </div>
+    <div class="flex gap-2 mt-2 w-full">
+      <button @click="deleteWorkingTime(workingTime.id)"
+        class="bg-red-500 text-white py-0.5 px-3 rounded hover:bg-red-600 w-full text-sm">
+        Supprimer le Journal
+      </button>
+    </div>
+  </div>
+  <button @click="showCreateForm"
+    class="mb-4 bg-bat-yellow text-bat-black py-0.5 px-3 rounded hover:bg-yellow-300 w-full text-sm">
+    Créer un nouveau Journal
+  </button>
+</div>
+
 
 
     <div v-if="createMode" class="mt-8 bg-bat-black p-6 rounded-lg shadow-bat">
-  <h3 class="text-lg font-semibold mb-4 text-bat-yellow">
+  <h3 class="text-lg font-semibold mb-4 text-bat-yellow ">
     Créer un Nouveau Journal de Patrouille
   </h3>
   <form @submit.prevent="createWorkingTime" class="space-y-4">
@@ -256,6 +257,7 @@ export default {
   },
 
   async createWorkingTime() {
+    // console.log('TOTO')
     try {
       if (!this.newWorkingTime.start || !this.newWorkingTime.end) {
         console.error("Start or end time is missing.");
@@ -270,9 +272,11 @@ export default {
         }
       };
       const response = await axios.post(
-        `http://localhost:4000/api/workingtimes`,
+        `http://localhost:4000/api/workingtime/${this.userId}`,
         data
       );
+      this.getWorkingTimes();
+      // console.log('RESPONSE CREATE',response)
       this.workingTimes.push(response.data); 
       this.createMode = false; 
       this.newWorkingTime = { start: "", end: "" }; 
