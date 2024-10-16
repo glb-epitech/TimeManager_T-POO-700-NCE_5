@@ -9,6 +9,11 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
+        # Auth routes
+      post "/auth/login", AuthController, :login                                        # URL: /api/auth/login (Se connecter)
+      post "/auth/signup", AuthController, :signup                                      # URL: /api/auth/signup (S'inscrire)
+
+
     # User routes
     get "/users/user", UserController, :show_user_by_email_and_username               # URL: /api/users/user (Afficher un utilisateur spécifique)
     get "/users", UserController, :index                                              # URL: /api/users (Liste des utilisateurs)
@@ -16,7 +21,7 @@ defmodule TimeManagerWeb.Router do
     post "/users", UserController, :create                                            # URL: /api/users (Créer un nouvel utilisateur)
     put "/users/:id", UserController, :update                                         # URL: /api/users/:id (Mettre à jour un utilisateur spécifique)
     delete "/users/:id", UserController, :delete                                      # URL: /api/users/:id (Supprimer un utilisateur spécifique)
-    
+
     # Report routes
     get "/reports/daily_hours", ReportController, :daily_hours
     get "/reports/weekly_hours", ReportController, :weekly_hours
