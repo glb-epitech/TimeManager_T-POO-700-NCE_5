@@ -1,20 +1,27 @@
 <template>
-    <div>
-      <!-- Date picker to select the start of the week -->
-      <div class="date-picker">
-        <label for="start-date">Select Start Date:</label>
-        <input type="date" id="start-date" v-model="selectedStartDate" @change="fetchChartData" />
-      </div>
-  
-      <!-- Chart container -->
-      <div class="chart-container">
-        <BarChart v-if="chartData" :chart-data="chartData" :options="chartOptions" />
-        <p v-else>{{ loadingMessage }}</p>
-      </div>
+    <div class="bg-bat-gray rounded-lg shadow-bat p-6">
+        <h2 class="text-1xl font-bold mb-6 text-bat-yellow">Daily Hours Chart</h2>
+
+        <!-- Date picker to select the start of the week -->
+        <div class="date-picker">
+            <label for="start-date" class="block text-sm font-medium text-bat-silver mb-1">Select Start Date:</label>
+            <input type="date" id="start-date" v-model="selectedStartDate" @change="fetchChartData" class="px-3 py-2 bg-bat-gray border border-bat-silver rounded-md text-bat-silver focus:outline-none focus:border-bat-yellow" />
+        </div>
+
+        <!-- Chart container -->
+        <div class="chart-container">
+            <BarChart v-if="chartData" :chart-data="chartData" :options="chartOptions" />
+            <p v-else>{{ loadingMessage }}</p>
+        </div>
+    
+        <!-- Total hours worked for the week -->
+        <div v-if="totalHours !== null" class="total-hours">
+            <p>Total hours worked for the week: <strong>{{ totalHours }}</strong></p>
+        </div>
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
     import { defineComponent, ref, onMounted } from "vue";
     import { useRoute } from "vue-router";
     import { BarChart } from "vue-chart-3";
@@ -28,6 +35,7 @@
       setup() {
         const chartData = ref(null);
         const loadingMessage = ref("Loading chart...");
+        const totalHours = ref(null);  // For holding the total hours worked for the week
         const chartOptions = ref({
           responsive: true,
           scales: {
@@ -86,6 +94,9 @@
               return hours;
             });
   
+            // Calculate total hours worked for the week
+            totalHours.value = hoursWorked.reduce((total, hours) => total + hours, 0);
+  
             chartData.value = {
               labels, // Use formatted labels
               datasets: [
@@ -134,12 +145,13 @@
           selectedStartDate,
           fetchChartData,
           loadingMessage,
+          totalHours,
         };
       },
     });
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
     .date-picker {
       margin-bottom: 20px;
     }
@@ -148,139 +160,10 @@
       width: 100%;
       height: 400px;
     }
-  </style>
   
-
-
-
-
-
-
-
-<!-- <template>
-  <div class="chart-container">
-    <BarChart
-      v-if="chartData"
-      :chart-data="chartData"
-      :options="chartOptions"
-    />
-    <p v-else>Loading chart...</p>
-  </div>
-</template>
-
-<script>
-import { defineComponent, ref, onMounted } from "vue";
-import { useRoute } from "vue-router"; // To access the query parameters
-import { BarChart } from "vue-chart-3";
-import axios from "axios";
-import "chart.js/auto";
-
-export default defineComponent({
-  components: {
-    BarChart,
-  },
-  setup() {
-    const chartData = ref(null);
-    const chartOptions = ref({
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Hours Worked",
-          },
-        },
-        x: {
-          title: {
-            display: true,
-            text: "Days of the Week",
-          },
-        },
-      },
-    });
-
-    const route = useRoute(); // Get the route object
-    const userId = ref(route.query.id); // Extract the user_id from the URL query parameters
-
-    const fetchChartData = async () => {
-      try {
-        const currentWeekDates = getCurrentWeekDates(); // Get an array of dates for the current week
-        const hoursWorked = [];
-
-        console.log("Current Week Dates:", currentWeekDates); // Check the dates being used for API calls
-
-        // Fetch data for each day of the week
-        for (const date of currentWeekDates) {
-          const response = await axios.get(`/api/reports/daily_hours`, {
-            params: { user_id: userId.value, date },
-          });
-
-          console.log(`API response for ${date}:`, response.data); // Log the API response for each day
-
-          // Extract hours worked from API response (assuming response format: { hours_worked: number })
-          hoursWorked.push(response.data.hours_worked);
-        }
-
-        console.log("Hours Worked Data:", hoursWorked); // Check the hours data
-
-        // Set up chart data
-        chartData.value = {
-          labels: [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
-          ],
-          datasets: [
-            {
-              label: "Hours Worked",
-              backgroundColor: "#42A5F5",
-              data: hoursWorked, // Add hours worked data for each day
-            },
-          ],
-        };
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      }
-    };
-
-    // Helper function to get dates for the current week (Monday to Sunday)
-    const getCurrentWeekDates = () => {
-      const today = new Date();
-      const firstDayOfWeek = today.getDate() - today.getDay() + 1; // Get Monday of the current week
-      const dates = [];
-
-      for (let i = 0; i < 7; i++) {
-        const date = new Date(today.setDate(firstDayOfWeek + i))
-          .toISOString()
-          .split("T")[0]; // Format as YYYY-MM-DD
-        dates.push(date);
-      }
-
-      return dates; // Return an array of dates for the current week
-    };
-
-    onMounted(() => {
-      fetchChartData();
-    });
-
-    return {
-      chartData,
-      chartOptions,
-      userId,
-    };
-  },
-});
-</script>
-
-<style scoped>
-.chart-container {
-  width: 100%;
-  height: 400px;
-  margin-top: 20px;
-}
-</style> -->
+    .total-hours {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+</style>
+  

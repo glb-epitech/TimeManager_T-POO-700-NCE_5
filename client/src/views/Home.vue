@@ -26,15 +26,16 @@
         <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Vigilante Analytics</h2>
         <ChartManager :userId="currentUserId" />
       </div>
+
+      <!-- Chart Manager Card -->
+      <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300 lg:col-span-3">
+        <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Vigilante Analytics</h2>
+        <DailyHoursChart />
+      </div>
+
     </div>
   </div>
 
-  <div>
-    <h1>Time Tracking Dashboard</h1>
-    <DailyHoursChart />
-    <WeeklySummaryChart />
-    <TimeBreakdownChart />
-  </div>
 </template>
 
 <script setup>
