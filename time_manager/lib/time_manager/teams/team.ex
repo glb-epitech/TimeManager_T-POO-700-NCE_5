@@ -4,7 +4,7 @@ defmodule TimeManager.Teams.Team do
 
   schema "teams" do
     field :name, :string
-    belongs_to :manager, YourApp.Accounts.User, foreign_key: :manager_id  # Defines the manager relationship
+    belongs_to :manager, TimeManager.Accounts.User, foreign_key: :manager_id  # Defines the manager relationship
 
     timestamps()
   end

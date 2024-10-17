@@ -18,4 +18,9 @@ defmodule TimeManagerWeb.ErrorJSON do
   def render(template, _assigns) do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end
+
+  # Add a specific render function for 403 errors
+  def render("403.json", _assigns) do
+    %{errors: %{detail: "Forbidden"}}
+  end
 end
