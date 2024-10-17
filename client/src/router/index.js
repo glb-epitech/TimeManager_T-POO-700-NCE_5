@@ -5,6 +5,7 @@ import User from '@/components/User.vue';
 import WorkingTimes from '@/components/WorkingTimes.vue';
 import Login from '@/components/Login.vue';
 import Signup from '@/components/Signup.vue';
+import TeamList from '@/components/TeamList.vue';
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     name: 'WorkingTimes',
     component: WorkingTimes,
     props: true
+  },
+  {
+    path:'/teams',
+    name:'Teams',
+    component: TeamList
   },
   // Vous pouvez ajouter d'autres routes ici si nécessaire
 ];

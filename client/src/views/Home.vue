@@ -5,7 +5,7 @@
       <img src="../assets/logo-de-batman.jpg" alt="Batman Logo" class="h-12 w-auto" />
       <h1 class="text-3xl md:text-4xl font-bold text-bat-yellow">Gotham City Management</h1>
     </header>
-    
+
     <div class="grid grid-cols-12 gap-6">
       <!-- Sidebar - User Management and Clock Manager -->
       <aside class="col-span-12 lg:col-span-3 space-y-6">
@@ -58,15 +58,20 @@
 
 
         <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Line Patrol Activity</h2>
-            <LineChart :userId="currentUserId" />
-          </div>
-        
+          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Line Patrol Activity</h2>
+          <LineChart :userId="currentUserId" />
+        </div>
+
 
         <!-- Working Times Card -->
         <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
           <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Patrol Log</h2>
           <WorkingTimes />
+        </div>
+
+        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
+          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Team Management</h2>
+          <Team />
         </div>
       </main>
     </div>
@@ -81,6 +86,7 @@ import WorkingTimes from '@/components/WorkingTimes.vue';
 import ChartManager from '@/components/ChartManager.vue';
 import DailyHoursChart from '@/components/charts/user/DailyHoursChart.vue';
 import LineChart from '@/components/LineChart.vue';
+import Team from '@/components/TeamList.vue';
 
 const currentUserId = ref('15'); // Replace with actual user ID logic
 const totalPatrolHours = ref(0);
@@ -111,7 +117,8 @@ const calculateVigilanceScore = async () => {
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 body {
-  font-family: 'Roboto', sans-serif; /* Fallback to Roboto if Gotham is not available */
+  font-family: 'Roboto', sans-serif;
+  /* Fallback to Roboto if Gotham is not available */
 }
 
 /* Unified Button Styles */

@@ -95,7 +95,7 @@ defmodule TimeManagerWeb do
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
-      import TimeManagerWeb.CoreComponents
+      # import TimeManagerWeb.CoreComponents
       import TimeManagerWeb.Gettext
 
       # Shortcut for generating JS commands
