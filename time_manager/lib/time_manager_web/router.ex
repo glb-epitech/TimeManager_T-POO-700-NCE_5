@@ -45,5 +45,9 @@ defmodule TimeManagerWeb.Router do
     get "/clocks", ClockController, :index
     post "/clocks/:user_id", ClockController, :create
     get "/clocks/:user_id", ClockController, :show
+
+     # Team routes
+     resources "/teams", TeamController, except: [:new, :edit]
+
   end
 end
