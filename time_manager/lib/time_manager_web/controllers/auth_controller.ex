@@ -2,6 +2,7 @@ defmodule TimeManagerWeb.AuthController do
   use TimeManagerWeb, :controller
 
   alias TimeManager.Accounts
+  alias TimeManager.Token
 
   action_fallback TimeManagerWeb.FallbackController
 
@@ -22,14 +23,14 @@ defmodule TimeManagerWeb.AuthController do
   def login(conn, %{"email" => email, "password" => password}) do
     case Accounts.authenticate_user(email, password) do
       {:ok, user} ->
-        token = TimeManager.Token.generate_and_sign(%{"user_id" => user.id})
+        {token, xsrf_token} = Token.generate_and_sign_token(%{"user_id" => user.id})
         conn
-        |> put_status(:ok)
-        |> render(:login, user: user, token: token)
+        |> put_resp_cookie("auth_token", token, http_only: true, secure: true)
+        |> render("login.json", %{user: user, xsrf_token: xsrf_token})
       {:error, :unauthorized} ->
         conn
         |> put_status(:unauthorized)
-        |> render(:error, message: "Invalid email or password")
+        |> render("error.json", %{message: "Invalid email or password"})
     end
   end
 end
