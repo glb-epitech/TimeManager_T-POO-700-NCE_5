@@ -3,6 +3,8 @@ defmodule TimeManagerWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :put_view, json: TimeManagerWeb.ErrorJSON
+
   end
 
   pipeline :auth do
