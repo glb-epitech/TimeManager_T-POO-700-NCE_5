@@ -19,19 +19,32 @@ defmodule TimeManagerWeb.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
+    user_params = filter_user_params(user_params)
+    
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", ~p"/api/users/#{user}")
+      |> put_resp_header("location", ~p"/api/users/#{user.id}")
       |> render(:show, user: user)
+    else
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(TimeManagerWeb.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Accounts.get_user!(id)
+    user_params = filter_user_params(user_params)
 
     with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
       render(conn, :show, user: user)
+    else
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(TimeManagerWeb.ChangesetView, "error.json", changeset: changeset)
     end
   end
 
@@ -42,4 +55,11 @@ defmodule TimeManagerWeb.UserController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  # Helper function to filter the incoming user params
+  defp filter_user_params(user_params) do
+    user_params
+    |> Map.drop(["password_confirmation"]) # if you handle password confirmation
+  end
+
 end
