@@ -63,6 +63,7 @@ defmodule TimeManager.MixProject do
       {:cors_plug, "~> 3.0"},
       {:pbkdf2_elixir, "~> 1.4"},
       {:joken, "~> 2.5"},
+      {:guardian, "~> 2.0"},
 
     ]
   end
