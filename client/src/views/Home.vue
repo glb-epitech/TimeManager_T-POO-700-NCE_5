@@ -55,6 +55,14 @@
           </div>
         </div>
 
+
+
+        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
+            <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Line Patrol Activity</h2>
+            <LineChart :userId="currentUserId" />
+          </div>
+        
+
         <!-- Working Times Card -->
         <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
           <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Patrol Log</h2>
@@ -72,6 +80,7 @@ import User from '@/components/User.vue';
 import WorkingTimes from '@/components/WorkingTimes.vue';
 import ChartManager from '@/components/ChartManager.vue';
 import DailyHoursChart from '@/components/charts/user/DailyHoursChart.vue';
+import LineChart from '@/components/LineChart.vue';
 
 const currentUserId = ref('15'); // Replace with actual user ID logic
 const totalPatrolHours = ref(0);
