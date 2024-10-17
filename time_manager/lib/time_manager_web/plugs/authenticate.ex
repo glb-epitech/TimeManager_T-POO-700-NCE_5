@@ -13,8 +13,8 @@ defmodule TimeManagerWeb.Plugs.Authenticate do
       _ ->
         conn
         |> put_status(:unauthorized)
-        |> Phoenix.Controller.put_view(TimeManagerWeb.ErrorView)
-        |> Phoenix.Controller.render("401.json")
+        |> Phoenix.Controller.put_view(json: TimeManagerWeb.ErrorJSON)
+        |> Phoenix.Controller.render(:error, status: :unauthorized)
         |> halt()
     end
   end
