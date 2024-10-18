@@ -11,10 +11,10 @@ defmodule TimeManagerWeb.TeamController do
   end
 
   # GET /teams/:id - Récupérer une équipe spécifique
-  def show(conn, %{"id" => id}) do
-    team = Teams.get_team!(id)
-    render(conn, "show.json", team: team)
-  end
+  # def show(conn, %{"id" => id}) do
+  #   team = Teams.get_team!(id)
+  #   render(conn, "show.json", team: team)
+  # end
 
   # POST /teams - Créer une nouvelle équipe
   def create(conn, %{"team" => team_params}) do
@@ -42,4 +42,26 @@ defmodule TimeManagerWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
+
+   # GET /teams/:id - Récupérer une équipe spécifique avec ses membres
+   def show(conn, %{"id" => id}) do
+    team = Teams.get_team_with_members!(id)
+    render(conn, "show_with_members.json", team: team)
+  end
+
+    # PUT /teams/:team_id/users/:user_id - Ajouter un utilisateur à une équipe
+def add_user_to_team(conn, %{"team_id" => team_id, "user_id" => user_id}) do
+  user = Accounts.get_user!(user_id)
+
+  case Accounts.update_user(user, %{team_id: team_id}) do
+    {:ok, user} ->
+      json(conn, %{message: "User successfully added to team", user: user})
+    {:error, changeset} ->
+      conn
+      |> put_status(:unprocessable_entity)
+      |> json(%{errors: changeset})
+  end
+end
+
+
 end

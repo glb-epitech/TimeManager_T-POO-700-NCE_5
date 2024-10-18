@@ -49,5 +49,9 @@ defmodule TimeManagerWeb.Router do
      # Team routes
      resources "/teams", TeamController, except: [:new, :edit]
 
+      # Route pour associer un utilisateur à une équipe
+  put "/teams/:team_id/users/:user_id", TeamController, :add_user_to_team
+
+
   end
 end
