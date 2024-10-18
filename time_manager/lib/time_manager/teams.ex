@@ -29,4 +29,18 @@ defmodule TimeManager.Teams do
   def delete_team(%Team{} = team) do
     Repo.delete(team)
   end
+
+
+
+
+   # Récupérer une équipe avec ses membres (utilisateurs qui ont team_id défini)
+   def get_team_with_members!(id) do
+    Repo.get!(Team, id)
+    |> Repo.preload(:members)  # Précharger les membres de l'équipe
+  end
+
+
+
+
+
 end

@@ -96,6 +96,13 @@ defmodule TimeManagerWeb.Router do
      resources "/teams", TeamController, except: [:new, :edit]
 
 
+
+
+      # Route pour associer un utilisateur à une équipe
+  put "/teams/:team_id/users/:user_id", TeamController, :add_user_to_team
+
+
+
     get "/reports/company/daily_hours", ReportController, :company_daily_hours
     get "/reports/company/weekly_hours", ReportController, :company_weekly_hours
 
