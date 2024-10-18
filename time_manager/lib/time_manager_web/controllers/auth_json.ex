@@ -14,14 +14,12 @@ defmodule TimeManagerWeb.AuthJSON do
     }
   end
 
-  def error(%{message: message}) do
-    %{error: message}
-  end
-
   defp user_json(%User{} = user) do
     %{
       id: user.id,
-      email: user.email
+      email: user.email,
+      username: user.username,
+      role: user.role
     }
   end
 end

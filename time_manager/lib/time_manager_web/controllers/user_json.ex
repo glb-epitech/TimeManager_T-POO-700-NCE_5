@@ -23,4 +23,19 @@ defmodule TimeManagerWeb.UserJSON do
       # Add other fields as necessary
     }
   end
+
+  @doc """
+  Renders the user object when a new user is created
+  """
+  def user(%{user: user}) do
+    %{
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      inserted_at: user.inserted_at,
+      updated_at: user.updated_at
+    }
+  end
+
 end

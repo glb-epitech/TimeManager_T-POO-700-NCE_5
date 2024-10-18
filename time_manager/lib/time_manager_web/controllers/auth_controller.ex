@@ -11,14 +11,18 @@ defmodule TimeManagerWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_status(:created)
-        |> render("user.json", user: user)
+        |> render(TimeManagerWeb.AuthJSON, "user.json", user: user)
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
+        |> put_view(TimeManagerWeb.ChangesetJSON)
         |> render("error.json", changeset: changeset)
+
       {:error, reason} ->
         conn
         |> put_status(:internal_server_error)
+        |> put_view(TimeManagerWeb.ErrorJSON)
         |> render("error.json", message: inspect(reason))
     end
   end
