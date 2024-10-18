@@ -1,6 +1,7 @@
 defmodule TimeManagerWeb.ErrorJSON do
-  # If you want to customize a particular status code,
-  # you may add your own clauses, such as:
+  @moduledoc """
+  Handles rendering of error messages in JSON format.
+  """
 
   def render("404.json", _assigns) do
     %{errors: %{detail: "Not Found"}}
@@ -19,6 +20,39 @@ defmodule TimeManagerWeb.ErrorJSON do
 
   def error(%{message: message}) do
     %{errors: %{detail: message}}
+  end
+
+  def error(%{status: :unauthorized}) do
+    %{
+      errors: %{detail: "Unauthorized access"}
+    }
+  end
+
+  def error(%{status: :forbidden}) do
+    %{
+      errors: %{detail: "Access forbidden"}
+    }
+  end
+
+  def error(%{status: :not_found}) do
+    %{
+      errors: %{detail: "Resource not found"}
+    }
+  end
+
+  def error(%{status: :bad_request}) do
+    %{
+      errors: %{detail: "Bad request"}
+    }
+  end
+
+  # Add clauses for other common statuses as necessary
+
+  # Fallback if the status is not specifically handled
+  def error(%{status: status}) do
+    %{
+      errors: %{detail: "An error occurred: #{inspect(status)}"}
+    }
   end
 
 end
