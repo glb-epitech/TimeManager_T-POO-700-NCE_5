@@ -49,10 +49,23 @@ defmodule TimeManager.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
+  # def create_user(attrs \\ %{}) do
+  #   %User{}
+  #   |> User.changeset(attrs)
+  #   |> Repo.insert()
+  # end
   def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+    changeset = User.changeset(%User{}, attrs)
+
+    IO.inspect(changeset, label: "User Changeset")
+
+    case Repo.insert(changeset) do
+      {:ok, user} -> 
+        {:ok, user}
+      {:error, changeset} -> 
+        IO.inspect(changeset, label: "Changeset Error")
+        {:error, changeset}
+    end
   end
 
   @doc """
