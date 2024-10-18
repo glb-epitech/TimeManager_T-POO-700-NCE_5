@@ -121,4 +121,18 @@ defmodule TimeManager.Accounts do
 
     Repo.one(query)
   end
+
+  def authenticate_user(email, password) do
+    user = Repo.get_by(User, email: email)
+    case user do
+      nil ->
+        {:error, :unauthorized}
+      user ->
+        if Pbkdf2.verify_pass(password, user.password_hash) do
+          {:ok, user}
+        else
+          {:error, :unauthorized}
+        end
+    end
+  end
 end

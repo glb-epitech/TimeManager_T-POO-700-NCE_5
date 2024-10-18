@@ -11,23 +11,30 @@ defmodule TimeManagerWeb.AuthController do
       {:ok, user} ->
         conn
         |> put_status(:created)
-        |> render(:user, user: user)
+        |> render("user.json", user: user)
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> put_view(TimeManagerWeb.ChangesetJSON)
-        |> render(:error, changeset: changeset)
+        |> render("error.json", changeset: changeset)
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> render("error.json", message: inspect(reason))
     end
   end
 
   def login(conn, %{"email" => email, "password" => password}) do
+    IO.puts("Starting login process")
     case Accounts.authenticate_user(email, password) do
       {:ok, user} ->
+        IO.puts("User authenticated successfully")
         {token, xsrf_token} = Token.generate_and_sign_token(%{"user_id" => user.id})
+        IO.puts("Token generated")
         conn
-        |> put_resp_cookie("auth_token", token, http_only: true, secure: true)
-        |> render("login.json", %{user: user, xsrf_token: xsrf_token})
+        |> put_status(:ok)
+        |> render("login.json", %{user: user, token: token, xsrf_token: xsrf_token})
       {:error, :unauthorized} ->
+        IO.puts("Authentication failed")
         conn
         |> put_status(:unauthorized)
         |> render("error.json", %{message: "Invalid email or password"})
