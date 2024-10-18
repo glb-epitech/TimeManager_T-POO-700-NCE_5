@@ -76,6 +76,12 @@
       </div>
     </div>
   </div>
+
+
+  <div class="mt-6 bg-bat-gray rounded-lg shadow-bat p-4">
+        <h3 class="text-xl font-bold mb-4 text-bat-yellow">Gestionnaire d'équipe</h3>
+        <TeamList  />
+      </div>
 </template>
 
 <script setup>
@@ -86,6 +92,7 @@ import ClockManager from '@/components/ClockManager.vue';
 import WorkingTimes from '@/components/WorkingTimes.vue';
 import ChartManager from '@/components/ChartManager.vue';
 import api from '@/services/api';
+import TeamList from '@/components/TeamList.vue';
 
 const router = useRouter();
 const currentUser = ref({});

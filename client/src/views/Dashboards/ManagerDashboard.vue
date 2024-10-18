@@ -40,6 +40,11 @@
         </select>
       </div>
     </div>
+
+    <div class="mt-6 bg-bat-gray rounded-lg shadow-bat p-4">
+        <h3 class="text-xl font-bold mb-4 text-bat-silver">Gestionnaire d'équipe</h3>
+        <TeamList  />
+      </div>
   </template>
   
   <script setup>
@@ -49,6 +54,7 @@
   import WorkingTimes from '@/components/WorkingTimes.vue';
   import ChartManager from '@/components/ChartManager.vue';
   import DailyHoursChart from '@/components/charts/user/DailyHoursChart.vue';
+  import TeamList from '@/components/TeamList.vue';
   
   // eslint-disable-next-line no-unused-vars
   const props = defineProps({
