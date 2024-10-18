@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1 class="text-2xl font-bold mb-4">Team Management</h1>
+      <!-- <h1 class="text-2xl font-bold mb-4">Team Management</h1> -->
   
       <!-- Liste des équipes -->
       <ul v-if="teams.length">
@@ -36,15 +36,15 @@
   
       <!-- Formulaire de création d'équipe -->
       <div class="mt-6">
-        <h2 class="text-xl font-semibold mb-2">Create a new team</h2>
-        <form @submit.prevent="createTeam" class="bg-gray-100 p-4 rounded shadow">
+        <h2 class="text-bat-yellow text-xl font-semibold mb-2">Create a new team</h2>
+        <form @submit.prevent="createTeam" class="bg-bat-gray p-4 rounded shadow">
           <div class="mb-4">
-            <label class="block mb-2">Team Name:</label>
+            <label class="block mb-2 text-bat-yellow">Team Name:</label>
             <input v-model="newTeam.name" type="text" class="border p-2 rounded w-full" required />
           </div>
   
           <div class="mb-4">
-            <label class="block mb-2">Manager ID:</label>
+            <label class="block mb-2 text-bat-yellow">Manager ID:</label>
             <input v-model="newTeam.manager_id" type="number" class="border p-2 rounded w-full" required />
           </div>
   
