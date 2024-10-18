@@ -1,6 +1,9 @@
 defmodule TimeManager.Token do
   use Joken.Config
 
+  # Définissez votre clé secrète ici. Dans un environnement de production,
+  # vous devriez la récupérer à partir d'une variable d'environnement.
+
   @impl true
   def token_config do
     default_claims(
@@ -16,8 +19,13 @@ defmodule TimeManager.Token do
 
   def generate_and_sign_token(claims) do
     xsrf_token = generate_xsrf_token()
-    {:ok, token, _claims} = generate_and_sign(claims)
-    {token, xsrf_token}
+    claims_with_xsrf = Map.put(claims, "xsrf", xsrf_token)
+    case generate_and_sign(claims_with_xsrf) do
+      {:ok, token, _full_claims} ->
+        {token, xsrf_token}
+      {:error, reason} ->
+        raise "Failed to generate token: #{inspect(reason)}"
+    end
   end
 
   def verify_and_validate_with_xsrf(token, xsrf_token) do

@@ -16,14 +16,14 @@ defmodule TimeManager.Accounts.User do
   end
 
   @doc false
-  def changeset(user, attrs) do
-    user
-    |> cast(attrs, [:username, :email, :role, :team_id])
-    |> validate_required([:username, :email, :role])
-    |> unique_constraint(:email, name: "users_email_index")
-    |> validate_length(:password, min: 6)  # Add password length validation
-    |> put_password_hash()
-  end
+def changeset(user, attrs) do
+  user
+  |> cast(attrs, [:username, :email, :role, :team_id, :password])
+  |> validate_required([:username, :email, :role])
+  |> unique_constraint(:email, name: "users_email_index")
+  |> validate_length(:password, min: 6)
+  |> put_password_hash()
+end
 
   # Function to hash the password using PBKDF2
   defp put_password_hash(changeset) do
@@ -36,18 +36,7 @@ defmodule TimeManager.Accounts.User do
     end
   end
 
-  def authenticate_user(email, password) do
-    user = get_user_by_email(email)
-    case user do
-      nil -> {:error, :unauthorized}
-      user ->
-        if Pbkdf2.verify_pass(password, user.password_hash) do
-          {:ok, user}
-        else
-          {:error, :unauthorized}
-        end
-    end
-  end
+
 
   defp get_user_by_email(email) do
     Repo.get_by(User, email: email)

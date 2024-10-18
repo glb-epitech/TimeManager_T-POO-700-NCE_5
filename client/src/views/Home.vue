@@ -1,144 +1,80 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="bg-bat-black min-h-screen p-4 md:p-8 font-gotham text-bat-silver">
-    <header class="flex items-center justify-between mb-8">
-      <img src="../assets/logo-de-batman.jpg" alt="Batman Logo" class="h-12 w-auto" />
-      <h1 class="text-3xl md:text-4xl font-bold text-bat-yellow">Gotham City Management</h1>
-    </header>
-
-    <div class="grid grid-cols-12 gap-6">
-      <!-- Sidebar - User Management and Clock Manager -->
-      <aside class="col-span-12 lg:col-span-3 space-y-6">
-        <!-- User Management Card -->
-        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Vigilante Profile</h2>
-          <User />
-        </div>
-
-        <!-- Clock Manager Card -->
-        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Patrol Tracker</h2>
-          <ClockManager />
-        </div>
-      </aside>
-
-      <!-- Main Content Area -->
-      <main class="col-span-12 lg:col-span-9 space-y-6">
-        <!-- Quick Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-bat-blue rounded-lg shadow-bat p-6 text-center">
-            <h3 class="text-xl font-bold mb-2 text-bat-yellow">Total Patrol Hours</h3>
-            <p class="text-3xl font-bold text-bat-silver">{{ totalPatrolHours }}</p>
-          </div>
-          <div class="bg-bat-blue rounded-lg shadow-bat p-6 text-center">
-            <h3 class="text-xl font-bold mb-2 text-bat-yellow">Active Missions</h3>
-            <p class="text-3xl font-bold text-bat-silver">{{ activeMissions }}</p>
-          </div>
-          <div class="bg-bat-blue rounded-lg shadow-bat p-6 text-center">
-            <h3 class="text-xl font-bold mb-2 text-bat-yellow">Vigilance Score</h3>
-            <p class="text-3xl font-bold text-bat-silver">{{ vigilanceScore }}</p>
-          </div>
-        </div>
-
-        <!-- Charts Row -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Vigilante Analytics Card -->
-          <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Patrol Time Distribution</h2>
-            <ChartManager :userId="currentUserId" />
-          </div>
-
-          <!-- Daily Patrol Hours Card -->
-          <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-            <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Weekly Patrol Activity</h2>
-            <DailyHoursChart :userId="currentUserId" />
-          </div>
-        </div>
-
-
-
-        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Line Patrol Activity</h2>
-          <LineChart :userId="currentUserId" />
-        </div>
-
-
-        <!-- Working Times Card -->
-        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Patrol Log</h2>
-          <WorkingTimes />
-        </div>
-
-        <div class="bg-bat-gray rounded-lg shadow-bat p-6 hover:bg-opacity-90 transition duration-300">
-          <h2 class="text-2xl font-bold mb-4 text-bat-yellow">Team Management</h2>
-          <Team />
-        </div>
-      </main>
+  <div class="home">
+    <div v-if="isLoading" class="loading-spinner">
+      <!-- Ajoutez ici un indicateur de chargement -->
+      Chargement...
     </div>
+    <div v-else-if="!isAuthenticated" class="welcome-page">
+      <h1 class="text-3xl font-bold text-bat-yellow mb-4">Bienvenue sur Gotham City Management</h1>
+      <p class="text-bat-silver mb-4">Connectez-vous pour accéder à votre tableau de bord.</p>
+      <router-link to="/login" class="bg-bat-blue text-white py-2 px-4 rounded hover:bg-opacity-80">
+        Se connecter
+      </router-link>
+    </div>
+    <component v-else :is="currentDashboard" :userId="userId"></component>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import ClockManager from '@/components/ClockManager.vue';
-import User from '@/components/User.vue';
-import WorkingTimes from '@/components/WorkingTimes.vue';
-import ChartManager from '@/components/ChartManager.vue';
-import DailyHoursChart from '@/components/charts/user/DailyHoursChart.vue';
-import LineChart from '@/components/LineChart.vue';
-import Team from '@/components/TeamList.vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import EmployeeDashboard from '@/views/Dashboards/EmployeeDashboard.vue';
+import ManagerDashboard from '@/views/Dashboards/ManagerDashboard.vue';
+import GeneralManagerDashboard from '@/views/Dashboards/GeneralManagerDashboard.vue';
+import AdminDashboard from '@/views/Dashboards/AdminDashboard.vue';
 
-const currentUserId = ref('15'); // Replace with actual user ID logic
-const totalPatrolHours = ref(0);
-const activeMissions = ref(0);
-const vigilanceScore = ref(0);
+const router = useRouter();
+const isLoading = ref(true);
+const isAuthenticated = ref(false);
+const userRole = ref(null);
+const userId = ref(null);
 
-onMounted(async () => {
-  totalPatrolHours.value = await fetchTotalPatrolHours();
-  activeMissions.value = await fetchActiveMissions();
-  vigilanceScore.value = await calculateVigilanceScore();
+const currentDashboard = computed(() => {
+  switch (userRole.value) {
+    case 'employee':
+      return EmployeeDashboard;
+    case 'manager':
+      return ManagerDashboard;
+    case 'general_manager':
+      return GeneralManagerDashboard;
+    case 'admin':
+      return AdminDashboard;
+    default:
+      return null;
+  }
 });
 
-// Placeholder functions for fetching data
-const fetchTotalPatrolHours = async () => {
-  return Math.floor(Math.random() * 100) + 50;
-};
+onMounted(async () => {
+  try {
+    // Simuler une vérification d'authentification et de récupération du rôle de l'utilisateur
+    const authCheck = await checkAuthentication();
+    isAuthenticated.value = authCheck.isAuthenticated;
+    userRole.value = authCheck.role;
+    userId.value = authCheck.userId;
 
-const fetchActiveMissions = async () => {
-  return Math.floor(Math.random() * 5) + 1;
-};
+    if (isAuthenticated.value && userRole.value === 'admin') {
+      // Si l'utilisateur est un admin, rediriger directement vers le tableau de bord admin
+      router.push('/admin-dashboard');
+    }
+  } catch (error) {
+    console.error("Erreur lors de la vérification de l'authentification:", error);
+  } finally {
+    isLoading.value = false;
+  }
+});
 
-const calculateVigilanceScore = async () => {
-  return Math.floor(Math.random() * 50) + 50;
+const checkAuthentication = () => {
+  // Simuler un appel API pour vérifier l'authentification
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simuler un utilisateur connecté avec un rôle
+      resolve({
+        isAuthenticated: true,
+        role: 'employee', // Changez ceci pour tester différents rôles
+        userId: '123' // ID de l'utilisateur connecté
+      });
+    }, 1000);
+  });
 };
 </script>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-body {
-  font-family: 'Roboto', sans-serif;
-  /* Fallback to Roboto if Gotham is not available */
-}
-
-/* Unified Button Styles */
-.bat-button {
-  @apply font-bold py-2 px-4 rounded-full shadow-bat transition duration-300 ease-in-out;
-}
-
-.bat-button-yellow {
-  @apply bg-bat-yellow text-bat-black hover:bg-opacity-80;
-}
-
-.bat-button-blue {
-  @apply bg-bat-blue text-white hover:bg-opacity-80;
-}
-
-.bat-button-red {
-  @apply bg-red-600 text-white hover:bg-opacity-80;
-}
-
-.bat-button-gray {
-  @apply bg-bat-gray text-bat-silver hover:bg-opacity-80;
-}
-</style>
