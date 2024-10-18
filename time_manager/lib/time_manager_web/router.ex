@@ -73,7 +73,31 @@ defmodule TimeManagerWeb.Router do
     post "/users/:id/demote", UserController, :demote_to_employee
     delete "/users/:id", UserController, :delete
 
+
+    # Report routes
+    get "/reports/daily_hours", ReportController, :daily_hours
+    get "/reports/weekly_hours", ReportController, :weekly_hours
+
+    # Working Time routes
+    get "/workingtimes", WorkingTimeController, :index
+    get "/workingtimes/:user_id/times", WorkingTimeController, :show_user
+    get "/workingtimes/:user_id", WorkingTimeController, :show_user_working_time
+    get "/workingtime/:id", WorkingTimeController, :show
+    post "/workingtime/:user_id", WorkingTimeController, :create
+    put "/workingtime/:id", WorkingTimeController, :update
+    delete "/workingtime/:id", WorkingTimeController, :delete
+
+    # Clocking routes
+    get "/clocks", ClockController, :index
+    post "/clocks/:user_id", ClockController, :create
+    get "/clocks/:user_id", ClockController, :show
+
+     # Team routes
+     resources "/teams", TeamController, except: [:new, :edit]
+
+
     get "/reports/company/daily_hours", ReportController, :company_daily_hours
     get "/reports/company/weekly_hours", ReportController, :company_weekly_hours
+
   end
 end

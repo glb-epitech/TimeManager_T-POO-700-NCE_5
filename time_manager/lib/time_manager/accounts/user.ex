@@ -10,7 +10,7 @@ defmodule TimeManager.Accounts.User do
     field :password, :string, virtual: true  # Virtual field for plain text password
     field :password_hash, :string
 
-    has_one :managed_teams, TimeManager.Teams.Team, foreign_key: :manager_id  # This adds the relation for managed teams
+    has_many :managed_teams, TimeManager.Teams.Team, foreign_key: :manager_id  # This adds the relation for managed teams
 
     timestamps(type: :utc_datetime)
   end
