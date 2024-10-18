@@ -18,7 +18,12 @@ config :time_manager, TimeManager.Repo,
 config :time_manager, TimeManagerWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "uCTVZWEsEWBF3GNsOuwH2APMIZCl/EL8MtFR6DHdOixEj7P7BJuP3pAV0pnrDQJX",
-  server: false
+  server: false,
+  # Add this configuration for error rendering
+  render_errors: [
+    formats: [json: TimeManagerWeb.ErrorJSON],
+    layout: false
+  ]
 
 # In test we don't send emails
 config :time_manager, TimeManager.Mailer, adapter: Swoosh.Adapters.Test
