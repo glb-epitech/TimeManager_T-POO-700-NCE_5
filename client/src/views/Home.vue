@@ -71,7 +71,7 @@ const checkAuthentication = () => {
       // Simuler un utilisateur connecté avec un rôle
       resolve({
         isAuthenticated: true,
-        role: 'employee', // Changez ceci pour tester différents rôles
+        role: 'general_manager', // Changez ceci pour tester différents rôles
         userId: '123' // ID de l'utilisateur connecté
       });
     }, 1000);
