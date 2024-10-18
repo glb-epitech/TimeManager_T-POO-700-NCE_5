@@ -4,14 +4,25 @@ import axios from 'axios';
 const TOKEN_KEY = 'auth_token';
 const USER_ROLE_KEY = 'user_role';
 
-export const checkAuthentication = () => {
-  const token = localStorage.getItem(TOKEN_KEY);
-  return !!token; // Retourne true si le token existe, false sinon
-};
+// export const checkAuthentication = () => {
+//   const token = localStorage.getItem(TOKEN_KEY);
+//   return !!token; // Retourne true si le token existe, false sinon
+// };
 
-export const getUserRole = () => {
-  return localStorage.getItem(USER_ROLE_KEY);
-};
+// export const getUserRole = () => {
+//   return localStorage.getItem(USER_ROLE_KEY);
+// };
+
+export function checkAuthentication() {
+  // Vérifie si le token est présent dans localStorage
+  return !!localStorage.getItem('token');
+}
+
+export function getUserRole() {
+  // Récupère le rôle stocké dans localStorage
+  return localStorage.getItem('role');
+}
+
 
 export const login = async (email, password) => {
   try {
