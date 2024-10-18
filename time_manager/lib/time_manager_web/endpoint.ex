@@ -1,9 +1,6 @@
 defmodule TimeManagerWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :time_manager
 
-  # The session will be stored in the cookie and signed,
-  # this means its contents can be read but not tampered with.
-  # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
     key: "_time_manager_key",
@@ -15,21 +12,14 @@ defmodule TimeManagerWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  plug CORSPlug # add this to link server to front
-
   # Serve at "/" the static files from "priv/static" directory.
-  #
-  # You should set gzip to true if you are running phx.digest
-  # when deploying your static files in production.
-  plug CORSPlug
   plug Plug.Static,
     at: "/",
     from: :time_manager,
     gzip: false,
     only: TimeManagerWeb.static_paths()
 
-  # Code reloading can be explicitly enabled under the
-  # :code_reloader configuration of your endpoint.
+  # Code reloading plugs for development environment
   if code_reloading? do
     plug Phoenix.CodeReloader
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :time_manager
@@ -50,6 +40,10 @@ defmodule TimeManagerWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  # Configure CORS correctly and only once
+  plug CORSPlug, origin: ["http://localhost:5173"]
+
+  # Router plug should come after other plugs
   plug TimeManagerWeb.Router
-  plug CORSPlug, origin: ["http://localhost:5173/"]
 end
