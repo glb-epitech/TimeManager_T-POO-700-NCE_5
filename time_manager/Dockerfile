@@ -2,7 +2,7 @@
 FROM elixir:1.14-alpine
 
 # Install build dependencies
-RUN apk add --no-cache build-base git postgresql-client
+RUN apk add --no-cache build-base git libstdc++ ncurses-libs openssl postgresql-client 
 
 # Set environment variables
 ENV MIX_ENV=prod
