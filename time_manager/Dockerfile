@@ -4,7 +4,7 @@ FROM elixir:1.14-alpine AS builder
 # Install build dependencies
 RUN apk add --no-cache build-base git postgresql-client
 
-# Set environment variables
+# Set environment variabless
 ENV MIX_ENV=prod
 
 # Install hex and rebar
@@ -50,7 +50,7 @@ COPY init.sh ./init.sh
 ENV LANG=C.UTF-8
 ENV PHX_SERVER=true
 
-# Expose the Phoenix port (this is for documentation, Heroku will override it)
+# Expose the Phoenix port
 EXPOSE 4000
 
 # Start the Phoenix app using the init script
