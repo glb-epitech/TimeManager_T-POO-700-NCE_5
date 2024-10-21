@@ -4,7 +4,7 @@ FROM elixir:1.14-alpine AS builder
 # Install build dependencies
 RUN apk add --no-cache build-base git postgresql-client
 
-# Set environment variables
+# Set environment variabless
 ENV MIX_ENV=prod
 
 # Install hex and rebar
