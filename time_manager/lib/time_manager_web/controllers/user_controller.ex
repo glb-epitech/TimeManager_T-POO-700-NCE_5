@@ -62,4 +62,62 @@ defmodule TimeManagerWeb.UserController do
     |> Map.drop(["password_confirmation"]) # if you handle password confirmation
   end
 
+  def promote(conn, %{"id" => id}) do
+    user_to_promote = Accounts.get_user!(id)
+    current_user = Guardian.Plug.current_resource(conn)
+
+    IO.inspect(current_user, label: "Current User")
+    IO.inspect(current_user.role, label: "Current User Role")
+
+    if current_user && current_user.role == "general_manager" do
+      case Accounts.update_user_role(user_to_promote, "manager") do
+        {:ok, updated_user} ->
+          render(conn, :show, user: updated_user)
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> render(TimeManagerWeb.ChangesetView, "error.json", changeset: changeset)
+      end
+    else
+      conn
+      |> put_status(:forbidden)
+      |> json(%{error: "Not authorized"})
+    end
+  end
+
+  # Demote a manager to employee
+  def demote(conn, %{"id" => id}) do
+    user_to_demote = Accounts.get_user!(id)
+    current_user = Guardian.Plug.current_resource(conn)
+
+    IO.inspect(current_user, label: "Current User")
+    IO.inspect(current_user.role, label: "Current User Role")
+
+    if current_user && current_user.role == "general_manager" do
+      case Accounts.update_user_role(user_to_demote, "employee") do
+        {:ok, updated_user} ->
+          render(conn, :show, user: updated_user)
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> render(TimeManagerWeb.ChangesetView, "error.json", changeset: changeset)
+      end
+    else
+      conn
+      |> put_status(:forbidden)
+      |> json(%{error: "Not authorized"})
+    end
+  end
+
+  # Helper function to get the current user role
+  defp current_user_role(conn) do
+    # Assuming there's a function to retrieve the current authenticated user
+    current_user = get_current_user(conn)
+    current_user.role
+  end
+
+  defp get_current_user(conn) do
+    conn.assigns[:current_user]
+  end
+
 end

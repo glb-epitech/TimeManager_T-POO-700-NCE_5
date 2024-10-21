@@ -148,4 +148,13 @@ defmodule TimeManager.Accounts do
         end
     end
   end
+
+  @doc """
+  Updates user role
+  """
+  def update_user_role(%User{} = user, new_role) do
+    user
+    |> User.changeset(%{role: new_role})
+    |> Repo.update()
+  end
 end

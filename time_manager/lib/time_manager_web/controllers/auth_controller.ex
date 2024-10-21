@@ -27,15 +27,42 @@ defmodule TimeManagerWeb.AuthController do
     end
   end
 
+  # def login(conn, %{"email" => email, "password" => password}) do
+  #   case Accounts.authenticate_user(email, password) do
+  #     {:ok, user} ->
+  #       {token, xsrf_token} = Token.generate_and_sign_token(%{"user_id" => user.id})
+  #       conn
+  #       |> put_status(:ok)  # 200 OK pour une authentification réussie
+  #       |> json(%{
+  #         token: token,
+  #         xsrf_token: xsrf_token,
+  #         user: %{
+  #           id: user.id,
+  #           role: user.role,
+  #           email: user.email
+  #         }
+  #       })
+
+  #     {:error, :unauthorized} ->
+  #       conn
+  #       |> put_status(:unauthorized)  # 401 Unauthorized pour une erreur d'authentification
+  #       |> json(%{message: "Invalid email or password"})
+
+  #     {:error, changeset} ->
+  #       conn
+  #       |> put_status(:unprocessable_entity)  # 422 Unprocessable Entity pour erreurs de validation
+  #       |> json(%{errors: Ecto.Changeset.traverse_errors(changeset, &translate_error/1)})
+  #   end
+  # end
+
   def login(conn, %{"email" => email, "password" => password}) do
     case Accounts.authenticate_user(email, password) do
       {:ok, user} ->
-        {token, xsrf_token} = Token.generate_and_sign_token(%{"user_id" => user.id})
+        {:ok, token, _claims} = TimeManagerWeb.Guardian.encode_and_sign(user, %{role: user.role})
         conn
-        |> put_status(:ok)  # 200 OK pour une authentification réussie
+        |> put_status(:ok)
         |> json(%{
           token: token,
-          xsrf_token: xsrf_token,
           user: %{
             id: user.id,
             role: user.role,
@@ -45,13 +72,8 @@ defmodule TimeManagerWeb.AuthController do
 
       {:error, :unauthorized} ->
         conn
-        |> put_status(:unauthorized)  # 401 Unauthorized pour une erreur d'authentification
+        |> put_status(:unauthorized)
         |> json(%{message: "Invalid email or password"})
-
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)  # 422 Unprocessable Entity pour erreurs de validation
-        |> json(%{errors: Ecto.Changeset.traverse_errors(changeset, &translate_error/1)})
     end
   end
 

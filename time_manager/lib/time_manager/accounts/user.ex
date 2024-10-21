@@ -16,14 +16,14 @@ defmodule TimeManager.Accounts.User do
   end
 
   @doc false
-def changeset(user, attrs) do
-  user
-  |> cast(attrs, [:username, :email, :role, :team_id, :password])
-  |> validate_required([:username, :email, :role])
-  |> unique_constraint(:email, name: "users_email_index")
-  |> validate_length(:password, min: 6)
-  |> put_password_hash()
-end
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [:username, :email, :role, :team_id, :password])
+    |> validate_required([:username, :email, :role])
+    |> unique_constraint(:email, name: "users_email_index")
+    |> validate_length(:password, min: 6)
+    |> put_password_hash()
+  end
 
   # Function to hash the password using PBKDF2
   defp put_password_hash(changeset) do
