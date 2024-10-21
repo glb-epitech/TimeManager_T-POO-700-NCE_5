@@ -4,11 +4,21 @@ defmodule TimeManagerWeb.Router do
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:put_view, json: TimeManagerWeb.ErrorJSON)
+    plug TimeManagerWeb.Plugs.GuardianFetchCurrentUser
   end
 
   pipeline :auth do
-    plug(TimeManagerWeb.Plugs.Authenticate)
-  end
+    plug Guardian.Plug.Pipeline,
+      module: TimeManagerWeb.Guardian,
+      error_handler: TimeManagerWeb.AuthErrorHandler
+    plug Guardian.Plug.VerifyHeader, scheme: "Bearer"
+    plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated
+end
+
+  # pipeline :auth do
+  #   plug(TimeManagerWeb.Plugs.Authenticate)
+  # end
 
   pipeline :ensure_auth do
     plug(Guardian.Plug.EnsureAuthenticated)
@@ -23,7 +33,7 @@ defmodule TimeManagerWeb.Router do
   end
 
   pipeline :general_manager_auth do
-    plug(TimeManagerWeb.Plugs.EnsureRole, [:general_manager])
+    plug TimeManagerWeb.Plugs.EnsureRole, ["general_manager"]
   end
 
   scope "/api", TimeManagerWeb do
@@ -101,5 +111,9 @@ defmodule TimeManagerWeb.Router do
 
     get("/reports/company/daily_hours", ReportController, :company_daily_hours)
     get("/reports/company/weekly_hours", ReportController, :company_weekly_hours)
+
+    # Promote and demote routes
+    put "/users/:id/promote", UserController, :promote
+    put "/users/:id/demote", UserController, :demote
   end
 end

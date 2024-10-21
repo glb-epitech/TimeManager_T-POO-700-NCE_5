@@ -22,6 +22,15 @@ config :time_manager, TimeManagerWeb.Endpoint,
   pubsub_server: TimeManager.PubSub,
   live_view: [signing_salt: "o4hlyLge"]
 
+
+# Guardian configuration
+config :time_manager, TimeManagerWeb.Guardian,
+  issuer: "time_manager",
+  secret_key: "ultcuPjYEAGzipUw3LZAcqESY+PS0wX6pZUZDCJiylLFcycrJeERuOfzxAfLzxnd8awHht1rHI1KLO2vRZrwDA==",  
+  allowed_algos: ["HS256"],       # Algorithm used to sign tokens
+  ttl: {30, :days}                # Time-to-live for JWT tokens
+
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
