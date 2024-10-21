@@ -1,17 +1,16 @@
 #!/bin/sh
 
-# Print environnement variables for debugging
+# Print environment variables for debugging (be careful not to print sensitive data)
 echo "Environment variables:"
 echo "DB_HOST: $DB_HOST"
 echo "DB_PORT: $DB_PORT"
 echo "DB_USER: $DB_USER"
 
-# Generate the SECRET_KEY_BASE
-SECRET_KEY_BASE=$(mix phx.gen.secret)
-export SECRET_KEY_BASE
-
-# Print the generated SECRET_KEY_BASE for debugging
-echo "Generated SECRET_KEY_BASE: $SECRET_KEY_BASE"
+# Check if SECRET_KEY_BASE is set
+if [ -z "$SECRET_KEY_BASE" ]; then
+  echo "ERROR: SECRET_KEY_BASE is not set. Please set it in Heroku config vars."
+  exit 1
+fi
 
 # Set a timeout for database connection attempts (e.g., 5 minutes)
 TIMEOUT=300
