@@ -15,7 +15,7 @@ RUN mix local.hex --force && \
 WORKDIR /app
 
 # Copy the time_manager directory contents into the container
-COPY ./time_manager .
+COPY . .
 
 # Install dependencies
 RUN mix deps.get --only prod
