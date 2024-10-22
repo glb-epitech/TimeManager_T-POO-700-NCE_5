@@ -1,6 +1,8 @@
 # backend/config/dev.exs
 import Config
 
+IO.puts "Loading DEV environment configuration..."
+
 # Configure your database
 config :time_manager, TimeManager.Repo,
   url: System.get_env("DATABASE_URL"),  # Use the full URL instead of individual parts
