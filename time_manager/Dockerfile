@@ -23,10 +23,10 @@ COPY . .
 # Compile assets
 RUN mix assets.deploy
 
-# Final stage - Using elixir image instead of alpine to keep mix available
+# Final stage
 FROM elixir:1.14-alpine
 
-# Install runtime dependencies
+# Install runtime dependencies and set up Elixir
 RUN apk add --no-cache build-base git postgresql-client npm && \
     mix local.hex --force && \
     mix local.rebar --force
@@ -37,10 +37,16 @@ WORKDIR /app
 # Copy the entire app
 COPY --from=builder /app ./
 
-# Set necessary environment variables
+# Set environment variables
 ENV LANG=C.UTF-8
 ENV PHX_SERVER=true
 ENV MIX_ENV=prod
+ENV PATH="/usr/local/bin:$PATH"
+ENV HOME=/app
+
+# Ensure proper permissions
+RUN chown -R nobody: /app
+USER nobody
 
 # Make init script executable
 RUN chmod +x ./init.sh
@@ -49,4 +55,5 @@ RUN chmod +x ./init.sh
 EXPOSE 4000
 
 # Start the Phoenix app using the init script
-CMD ["sh", "./init.sh"]
+ENTRYPOINT ["/bin/sh"]
+CMD ["./init.sh"]
