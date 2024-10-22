@@ -3,7 +3,7 @@
 echo "Starting initialization script..."
 
 # Force production environment
-export MIX_ENV=prod
+export MIX_ENV=dev
 export PHX_SERVER=true
 
 if [ ! -z "$DATABASE_URL" ]; then
