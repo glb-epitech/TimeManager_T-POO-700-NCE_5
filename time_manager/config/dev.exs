@@ -2,39 +2,25 @@
 import Config
 import_config "dev.secret.exs"
 
+# Debug: Print environment variables
+dburl = System.get_env("DATABASE_URL")
+IO.puts "DATABASE_URL: #{dburl}"
+IO.puts "DB_NAME: #{System.get_env("DB_NAME")}"
+
 # Configure your database
-database_url = System.get_env("DATABASE_URL")
+config :time_manager, TimeManager.Repo,
+  username: System.get_env("DB_USER"),
+  password: System.get_env("DB_PASS"),
+  hostname: System.get_env("DB_HOST"),
+  database: System.get_env("DB_NAME"),
+  port: String.to_integer(System.get_env("DB_PORT") || "5432"),
+  ssl: true,
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
-if database_url do
-  # If DATABASE_URL is present (production/staging), use it
-  config :time_manager, TimeManager.Repo,
-    url: database_url,
-    ssl: true,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
-else
-  # Otherwise, use default development configuration
-  config :time_manager, TimeManager.Repo,
-    username: "postgres",
-    password: "postgres",
-    hostname: "localhost",
-    database: "time_manager_dev",
-    stacktrace: true,
-    show_sensitive_data_on_connection_error: true,
-    pool_size: 10
-end
+# Print the final configuration
+repo_config = Application.get_env(:time_manager, TimeManager.Repo)
+IO.puts "Final Repo Config: #{inspect(repo_config)}"
 
-# For development, we disable any cache and enable
-# debugging and code reloading.
-config :time_manager, TimeManagerWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: String.to_integer(System.get_env("PORT") || "4000")],
-  check_origin: false,
-  code_reloader: true,
-  debug_errors: true,
-  secret_key_base: "VYOh1HDmw0ng3paROJ1bPCYi/2BatcDuyt3G1bJcySsuxzLn9TSqrN303REqKqUo",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:time_manager, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:time_manager, ~w(--watch)]}
-  ]
 
 # ## SSL Support
 #
