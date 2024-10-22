@@ -38,12 +38,6 @@ config :time_manager, TimeManager.Repo,
   show_sensitive_data_on_connection_error: true,
   stacktrace: true
 
-# Print the final configuration (with sensitive data masked)
-repo_config = Application.get_env(:time_manager, TimeManager.Repo)
-masked_config = repo_config
-  |> Keyword.put(:password, "****")
-IO.puts "Final Repo Config: #{inspect(masked_config)}"
-
 # For development, we disable any cache and enable
 # debugging and code reloading.
 config :time_manager, TimeManagerWeb.Endpoint,
