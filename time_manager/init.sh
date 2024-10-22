@@ -1,3 +1,4 @@
+echo "init.sh"
 
 # Ensure Hex is installed
 mix local.hex --force
