@@ -14,27 +14,34 @@ ENV MIX_ENV=prod
 # Set the working directory
 WORKDIR /app
 
-# Copy the mix.exs and mix.lock files
+# Copy mix files first
 COPY mix.exs mix.lock ./
 
-# Install dependencies
-RUN mix deps.get --only prod
+# Install and compile dependencies
+RUN mix deps.get --only prod && \
+    mix deps.compile
 
 # Copy the rest of the application code
 COPY . .
 
+# Compile the project
+RUN mix do compile
+
 # Final stage
 FROM elixir:1.14-alpine
 
-# Install runtime dependencies and set up Elixir
+# Install runtime dependencies
 RUN apk add --no-cache build-base git postgresql-client npm && \
     mix local.hex --force && \
     mix local.rebar --force
 
 WORKDIR /app
 
-# Copy the entire app
-COPY --from=builder /app ./
+# Copy the entire app and deps
+COPY --from=builder /app .
+COPY --from=builder /root/.mix /root/.mix
+COPY --from=builder /app/deps ./deps
+COPY --from=builder /app/_build ./_build
 
 # Set environment variables
 ENV LANG=C.UTF-8
@@ -44,6 +51,9 @@ ENV PATH="/usr/local/bin:$PATH"
 
 # Make init script executable
 RUN chmod +x ./init.sh
+
+# Verify deps are present
+RUN mix deps.get --only prod
 
 EXPOSE 4000
 

@@ -11,7 +11,7 @@ if [ ! -z "$DATABASE_URL" ]; then
     DB_PORT=$(echo $DATABASE_URL | awk -F[:/@] '{print $7}' | awk -F/ '{print $1}')
     DB_NAME=$(echo $DATABASE_URL | awk -F[:/@] '{print $8}')
 
-    # Export these variables so they're available to the Phoenix app
+    # Export these variables
     export DB_USER
     export DB_PASS
     export DB_HOST
@@ -27,7 +27,7 @@ echo "DB_HOST: $DB_HOST"
 echo "DB_PORT: $DB_PORT"
 echo "DB_NAME: $DB_NAME"
 
-# Wait for database to be ready
+# Wait for database
 echo "Waiting for database to be ready..."
 RETRIES=30
 until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER || [ $RETRIES -eq 0 ]; do
@@ -43,13 +43,16 @@ fi
 
 echo "Database is ready!"
 
-# Installing hex if not present
+# Ensure hex and rebar are installed
 mix local.hex --force
 mix local.rebar --force
+
+echo "Verifying dependencies..."
+mix deps.get --only prod
 
 echo "Setting up database..."
 mix ecto.create
 mix ecto.migrate
 
 echo "Starting Phoenix server..."
-mix phx.server
+exec mix phx.server
