@@ -5,6 +5,7 @@ echo "Environment variables:"
 echo "DB_HOST: $DB_HOST"
 echo "DB_PORT: $DB_PORT"
 echo "DB_USER: $DB_USER"
+echo "PORT: $PORT"
 
 # Check if SECRET_KEY_BASE is set
 if [ -z "$SECRET_KEY_BASE" ]; then
