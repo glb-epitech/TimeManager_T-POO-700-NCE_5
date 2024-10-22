@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Ensure Hex is installed
+mix local.hex --force
+mix local.rebar --force
+
 echo "Starting initialization script..."
 
 # Parse DATABASE_URL
