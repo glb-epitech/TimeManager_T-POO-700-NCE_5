@@ -2,7 +2,7 @@
 
 echo "Starting initialization script..."
 
-# Force production environment
+# Force development environment since we're testing in dev mode
 export MIX_ENV=dev
 export PHX_SERVER=true
 
@@ -12,6 +12,8 @@ else
     echo "ERROR: DATABASE_URL is not set"
     exit 1
 fi
+
+echo "PORT is set to: $PORT"
 
 # Wait for database
 echo "Waiting for database to be ready..."
@@ -35,7 +37,7 @@ echo "Database is ready!"
 # Ensure dependencies are available
 mix local.hex --force
 mix local.rebar --force
-mix deps.get --only prod
+mix deps.get
 
 echo "Starting Phoenix server..."
-mix phx.server
+elixir --erl "-detached" -S mix phx.server

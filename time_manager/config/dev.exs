@@ -20,6 +20,23 @@ config :time_manager, TimeManager.Repo,
 repo_config = Application.get_env(:time_manager, TimeManager.Repo)
 IO.puts "Final Repo Config: #{inspect(repo_config)}"
 
+# For development, we disable any cache and enable
+# debugging and code reloading.
+config :time_manager, TimeManagerWeb.Endpoint,
+  # Change IP binding to allow external connections
+  http: [
+    ip: {0, 0, 0, 0},
+    port: String.to_integer(System.get_env("PORT") || "4000")
+  ],
+  check_origin: false,
+  code_reloader: true,
+  debug_errors: true,
+  server: true,  # Make sure the server starts
+  secret_key_base: "VYOh1HDmw0ng3paROJ1bPCYi/2BatcDuyt3G1bJcySsuxzLn9TSqrN303REqKqUo",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:time_manager, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:time_manager, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
