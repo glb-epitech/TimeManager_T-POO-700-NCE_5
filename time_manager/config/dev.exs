@@ -6,7 +6,7 @@ IO.puts "Loading DEV environment configuration..."
 # Configure your database
 config :time_manager, TimeManager.Repo,
   url: System.get_env("DATABASE_URL"),  # Use the full URL instead of individual parts
-  ssl: [verify: :verify_none],  # Fix SSL warning
+  # ssl: [verify: :verify_none],  # Fix SSL warning
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 # Configure the endpoint

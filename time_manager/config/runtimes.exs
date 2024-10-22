@@ -12,9 +12,8 @@ if config_env() == :prod do
   config :time_manager, TimeManager.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    ssl: true
+    ssl: [verify: :verify_none]
 
-  # Configure the endpoint
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """
@@ -26,10 +25,10 @@ if config_env() == :prod do
 
   config :time_manager, TimeManagerWeb.Endpoint,
     server: true,
-    url: [scheme: "https", host: System.get_env("PHX_HOST") || "localhost", port: 443],
+    url: [scheme: "https", host: System.get_env("PHX_HOST"), port: 443],
     http: [
+      ip: {0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base,
-    cache_static_manifest: nil  # Removing static manifest requirement for now
+    secret_key_base: secret_key_base
 end
