@@ -48,6 +48,7 @@ echo "Database is ready!"
 
 # Create and migrate database
 echo "Setting up database..."
+mix phx.digest
 mix local.hex --force
 mix ecto.create
 mix ecto.migrate
