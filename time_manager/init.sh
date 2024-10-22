@@ -2,35 +2,24 @@
 
 echo "Starting initialization script..."
 
-# Parse DATABASE_URL if it exists
+# Force production environment
+export MIX_ENV=prod
+export PHX_SERVER=true
+
 if [ ! -z "$DATABASE_URL" ]; then
-    # Extract database connection info from DATABASE_URL
-    DB_USER=$(echo $DATABASE_URL | awk -F[:/@] '{print $4}')
-    DB_PASS=$(echo $DATABASE_URL | awk -F[:/@] '{print $5}')
-    DB_HOST=$(echo $DATABASE_URL | awk -F[:/@] '{print $6}')
-    DB_PORT=$(echo $DATABASE_URL | awk -F[:/@] '{print $7}' | awk -F/ '{print $1}')
-    DB_NAME=$(echo $DATABASE_URL | awk -F[:/@] '{print $8}')
-
-    # Export these variables
-    export DB_USER
-    export DB_PASS
-    export DB_HOST
-    export DB_PORT
-    export DB_NAME
+    echo "Database URL is set"
+else
+    echo "ERROR: DATABASE_URL is not set"
+    exit 1
 fi
-
-# Debug: Print all database-related environment variables
-echo "Database connection info:"
-echo "DATABASE_URL: $DATABASE_URL"
-echo "DB_USER: $DB_USER"
-echo "DB_HOST: $DB_HOST"
-echo "DB_PORT: $DB_PORT"
-echo "DB_NAME: $DB_NAME"
 
 # Wait for database
 echo "Waiting for database to be ready..."
 RETRIES=30
-until pg_isready -h $DB_HOST -p $DB_PORT -U $DB_USER || [ $RETRIES -eq 0 ]; do
+until pg_isready -U $(echo $DATABASE_URL | awk -F[:/@] '{print $4}') \
+                -h $(echo $DATABASE_URL | awk -F[:/@] '{print $6}') \
+                -p $(echo $DATABASE_URL | awk -F[:/@] '{print $7}' | awk -F/ '{print $1}') \
+                || [ $RETRIES -eq 0 ]; do
     echo "Waiting for postgres server, $((RETRIES)) remaining attempts..."
     RETRIES=$((RETRIES-1))
     sleep 1
@@ -43,16 +32,10 @@ fi
 
 echo "Database is ready!"
 
-# Ensure hex and rebar are installed
+# Ensure dependencies are available
 mix local.hex --force
 mix local.rebar --force
-
-echo "Verifying dependencies..."
 mix deps.get --only prod
 
-echo "Setting up database..."
-mix ecto.create
-mix ecto.migrate
-
 echo "Starting Phoenix server..."
-exec mix phx.server
+mix phx.server
