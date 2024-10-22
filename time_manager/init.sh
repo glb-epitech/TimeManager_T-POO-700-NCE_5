@@ -2,18 +2,20 @@
 
 echo "Starting initialization script..."
 
-# Force development environment since we're testing in dev mode
+# Set environment
 export MIX_ENV=dev
 export PHX_SERVER=true
 
-if [ ! -z "$DATABASE_URL" ]; then
-    echo "Database URL is set"
-else
+# Debug information
+echo "Environment variables:"
+echo "PORT: $PORT"
+echo "MIX_ENV: $MIX_ENV"
+echo "DATABASE_URL is set: $(if [ ! -z "$DATABASE_URL" ]; then echo "yes"; else echo "no"; fi)"
+
+if [ -z "$DATABASE_URL" ]; then
     echo "ERROR: DATABASE_URL is not set"
     exit 1
 fi
-
-echo "PORT is set to: $PORT"
 
 # Wait for database
 echo "Waiting for database to be ready..."
@@ -34,10 +36,12 @@ fi
 
 echo "Database is ready!"
 
-# Ensure dependencies are available
+# Install and compile dependencies
 mix local.hex --force
 mix local.rebar --force
 mix deps.get
+mix compile
 
 echo "Starting Phoenix server..."
-elixir --erl "-detached" -S mix phx.server
+# Use exec to replace the shell with the Phoenix server process
+exec mix phx.server
