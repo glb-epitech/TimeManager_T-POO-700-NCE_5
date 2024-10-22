@@ -1,10 +1,12 @@
-# Debug port information
-echo "Port configuration:"
-echo "PORT: $PORT"
 
 # Ensure Hex is installed
 mix local.hex --force
 mix local.rebar --force
+
+# Debug port information
+echo "Port configuration:"
+echo "PORT: $PORT"
+
 
 if [ ! -z "$DATABASE_URL" ]; then
     export DB_USER=$(echo $DATABASE_URL | awk -F[:/@] '{print $4}')
