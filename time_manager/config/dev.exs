@@ -11,16 +11,18 @@ config :time_manager, TimeManager.Repo,
   ssl: true,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
-# For development, we disable any cache and enable debugging
+# Configure the endpoint
 config :time_manager, TimeManagerWeb.Endpoint,
+  # Critical changes for Heroku:
+  url: [scheme: "https", host: System.get_env("PHX_HOST") || "localhost", port: 443],
   http: [
     ip: {0, 0, 0, 0},
     port: String.to_integer(System.get_env("PORT") || "4000")
   ],
+  server: true,  # Make sure this is true
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  server: true,
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:time_manager, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:time_manager, ~w(--watch)]}
