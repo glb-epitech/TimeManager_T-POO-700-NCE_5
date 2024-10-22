@@ -11,8 +11,12 @@ config :time_manager, TimeManager.Repo,
   database: System.get_env("DB_NAME") || "time_manager_dev",
   port: String.to_integer(System.get_env("DB_PORT") || "5432"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-  ssl: System.get_env("DB_SSL") == "true",
-  ssl_opts: [verify: :verify_none]
+  ssl: true,
+  ssl_opts: [
+    verify: :verify_none,
+    cacertfile: "/app/cacert.pem"  # Heroku's CA certificate
+  ],
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 # Configure the endpoint
 config :time_manager, TimeManagerWeb.Endpoint,
