@@ -3,10 +3,11 @@ import_config "dev.secret.exs"
 
 # Configure your database
 config :time_manager, TimeManager.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "time_manager_dev",
+  username: System.get_env("DB_USER") || "postgres",
+  password: System.get_env("DB_PASS") || "postgres",
+  hostname: System.get_env("DB_HOST") || "localhost",
+  database: System.get_env("DB_NAME") || "time_manager_dev",
+  port: String.to_integer(System.get_env("DB_PORT") || "5432"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
