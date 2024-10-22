@@ -1,6 +1,5 @@
 # backend/config/dev.exs
 import Config
-import_config "dev.secret.exs"
 
 # Debug: Print environment variables
 dburl = System.get_env("DATABASE_URL")
