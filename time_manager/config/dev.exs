@@ -3,23 +3,18 @@ import Config
 
 # Configure your database
 config :time_manager, TimeManager.Repo,
-  username: System.get_env("DB_USER"),
-  password: System.get_env("DB_PASS"),
-  hostname: System.get_env("DB_HOST"),
-  database: System.get_env("DB_NAME"),
-  port: String.to_integer(System.get_env("DB_PORT") || "5432"),
-  ssl: true,
+  url: System.get_env("DATABASE_URL"),  # Use the full URL instead of individual parts
+  ssl: [verify: :verify_none],  # Fix SSL warning
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
 
 # Configure the endpoint
 config :time_manager, TimeManagerWeb.Endpoint,
-  # Critical changes for Heroku:
   url: [scheme: "https", host: System.get_env("PHX_HOST") || "localhost", port: 443],
   http: [
     ip: {0, 0, 0, 0},
     port: String.to_integer(System.get_env("PORT") || "4000")
   ],
-  server: true,  # Make sure this is true
+  server: true,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -30,9 +25,3 @@ config :time_manager, TimeManagerWeb.Endpoint,
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
-
-# Set a higher stacktrace during development
-config :phoenix, :stacktrace_depth, 20
-
-# Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime
