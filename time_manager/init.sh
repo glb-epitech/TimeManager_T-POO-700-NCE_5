@@ -34,6 +34,13 @@ mix local.hex --force
 mix local.rebar --force
 mix deps.get
 
-# Start the server
+echo "Setting up database..."
+
+# Try to create the database (ignore error if it already exists)
+mix ecto.create || echo "Database already exists"
+
+echo "Running migrations..."
+mix ecto.migrate
+
 echo "Starting Phoenix server..."
 mix phx.server
