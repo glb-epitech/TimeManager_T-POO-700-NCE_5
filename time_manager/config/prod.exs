@@ -40,7 +40,7 @@ Host: #{System.get_env("DB_HOST") || "localhost"}
 Database: #{System.get_env("DB_NAME") || "time_manager_prod"}
 User: #{System.get_env("DB_USER") || "postgres"}
 Port: #{System.get_env("DB_PORT") || "5432"}
-SSL: true
+SSL: #{System.get_env("DB_SSL") || "false"}
 """
 
 # Configure logging for production
