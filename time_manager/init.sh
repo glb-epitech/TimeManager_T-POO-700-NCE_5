@@ -3,7 +3,7 @@
 echo "Starting initialization script..."
 
 # Force production environment
-export MIX_ENV=dev
+export MIX_ENV=prod
 export PHX_SERVER=true
 
 #!/bin/sh
