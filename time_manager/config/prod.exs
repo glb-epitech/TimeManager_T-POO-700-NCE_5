@@ -18,9 +18,9 @@ config :time_manager, TimeManager.Repo,
 # Configure the endpoint
 config :time_manager, TimeManagerWeb.Endpoint,
   url: [
-    scheme: "https",
+    scheme: System.get_env("SCHEME") || "http",
     host: System.get_env("PHX_HOST") || "localhost",
-    port: 443
+    port: String.to_integer(System.get_env("PORT") || "4000")
   ],
   http: [
     ip: {0, 0, 0, 0},
@@ -28,10 +28,9 @@ config :time_manager, TimeManagerWeb.Endpoint,
   ],
   server: true,
   check_origin: false,
-  # Remove development-specific options
+  # Remove development-specific options but keep the same structure
   code_reloader: false,
   debug_errors: false,
-  # Remove watchers in production
   watchers: []
 
 # Print current database configuration
@@ -49,19 +48,6 @@ config :logger, :console,
   format: "[$level] $message\n",
   level: :info
 
-# Force SSL in production
-config :time_manager, TimeManagerWeb.Endpoint,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]]
-
-# Configures the endpoint cache static
-config :time_manager, TimeManagerWeb.Endpoint,
-  cache_static_manifest: nil
-
-# Configure esbuild (without watch mode)
-config :esbuild,
-  version: "0.17.11",
-  default: [
-    args: ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
+# Important: Remove the static manifest configuration if you're not using it
+# config :time_manager, TimeManagerWeb.Endpoint,
+#   cache_static_manifest: nil
